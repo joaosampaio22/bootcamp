@@ -1,0 +1,7 @@
+Você vai implementar o Estudo em Dia, um aplicativo web profissional e universal de estudos.
+
+Antes de programar, leia AGENTS.md e todos os documentos numerados em docs/, começando por 00_LEIA_PRIMEIRO.md. A regra central: o usuário estuda QUALQUER conteúdo fora ou dentro de suas ferramentas habituais, recebe recompensas por sessões de foco registradas, cadastra manualmente os assuntos que estudou, recebe revisões periódicas e guarda pontos de retorno. A Academia Viva é DECORATIVA, cresce automaticamente com XP, sem city-builder, moedas ou gestão de recursos. NÃO implementar exercícios prontos nem dependência de LLM no app.
+
+Arquitetura obrigatória: React + TypeScript + Vite + Tailwind; NestJS com API REST; PostgreSQL + Prisma ORM 7; autenticação com sessão revogável/cookie seguro; testes. Respeite RF/RN/CA, controle de estados, integridade transacional, timezone e idempotência.
+
+Nesta primeira interação, implemente SOMENTE a ETAPA 0 de docs/07_PLANO_CODEX.md: monorepo, configurações, estrutura de frontend/backend, banco com Docker Compose, migração inicial mínima, health check e comandos de dev/test/build/lint. Não invente features P1/P2 nem declare testes executados sem rodá-los. Ao terminar, apresente arquivos criados, comandos executados, resultados e pendências reais. Aguarde nova solicitação para avançar à etapa 1.

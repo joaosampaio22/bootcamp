@@ -1,0 +1,36 @@
+{
+  "name": "estudo-em-dia",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/*"],
+  "engines": { "node": ">=24.19.0 <25", "npm": ">=11 <12" },
+  "packageManager": "npm@11.9.0",
+  "scripts": {
+    "setup:env": "node scripts/setup-env.mjs",
+    "postinstall": "npm run db:generate",
+    "dev": "concurrently --kill-others --names api,web --prefix-colors cyan,green \"npm run dev --workspace @estudo-em-dia/api\" \"npm run dev --workspace @estudo-em-dia/web\"",
+    "build": "npm run db:generate && npm run build --workspaces",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "npm run db:generate && npm run typecheck --workspaces",
+    "test": "node --test --test-isolation=none scripts/test-database.spec.mjs && npm run test --workspaces",
+    "test:integration": "node --env-file-if-exists=.env scripts/test-integration.mjs",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run test:integration && npm run build",
+    "db:up": "docker compose --profile test up -d --wait",
+    "db:down": "docker compose --profile test down",
+    "db:generate": "npm run db:generate --workspace @estudo-em-dia/api",
+    "db:migrate": "npm run db:migrate --workspace @estudo-em-dia/api",
+    "db:migrate:dev": "npm run db:migrate:dev --workspace @estudo-em-dia/api",
+    "db:status": "npm run db:status --workspace @estudo-em-dia/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "concurrently": "9.2.5",
+    "eslint": "10.14.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "globals": "16.5.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1"
+  }
+}
