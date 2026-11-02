@@ -20,6 +20,8 @@ model User {
   updatedAt       DateTime @updatedAt @db.Timestamptz(3)
   sessions        AuthSession[]
   subjects        Subject[]
+  focusSessions   FocusSession[]
+  rewardEvents    RewardEvent[]
 }
 
 model AuthSession {
@@ -42,6 +44,86 @@ model Subject {
   createdAt      DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
   user           User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  focusSessions  FocusSession[]
 
   @@index([userId, archivedAt])
+}
+
+enum FocusStatus {
+  RUNNING
+  PAUSED
+  NEEDS_RECONCILIATION
+  COMPLETED
+  INTERRUPTED
+  DISCARDED
+}
+
+enum RewardSource {
+  FOCUS_SESSION
+  REVIEW_ATTEMPT
+}
+
+model FocusSession {
+  id                   String      @id @default(uuid()) @db.Uuid
+  userId               String      @db.Uuid
+  subjectId            String?     @db.Uuid
+  contentId            String?     @db.Uuid
+  plannedSeconds       Int
+  activeSeconds        Int         @default(0)
+  elapsedActiveSeconds Int         @default(0)
+  status               FocusStatus @default(RUNNING)
+  activeStartedAt      DateTime?   @db.Timestamptz(3)
+  startedAt            DateTime    @db.Timestamptz(3)
+  finishedAt           DateTime?   @db.Timestamptz(3)
+  version              Int         @default(1)
+  createdAt            DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime    @updatedAt @db.Timestamptz(3)
+  user                 User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  subject              Subject?    @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  transitions          FocusTransition[]
+  actions              FocusAction[]
+
+  @@unique([id, userId])
+  @@index([userId, startedAt(sort: Desc)])
+  @@index([userId, status])
+}
+
+model FocusTransition {
+  id            String      @id @default(uuid()) @db.Uuid
+  userId        String      @db.Uuid
+  sessionId     String      @db.Uuid
+  fromStatus    FocusStatus?
+  toStatus      FocusStatus
+  activeSeconds Int
+  createdAt     DateTime    @db.Timestamptz(3)
+  session       FocusSession @relation(fields: [sessionId, userId], references: [id, userId], onDelete: Restrict)
+
+  @@index([userId, sessionId, createdAt])
+}
+
+model FocusAction {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  sessionId   String   @db.Uuid
+  key         String   @db.Uuid
+  fingerprint String   @db.VarChar(64)
+  response    Json
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  session     FocusSession @relation(fields: [sessionId, userId], references: [id, userId], onDelete: Restrict)
+
+  @@unique([userId, key])
+}
+
+model RewardEvent {
+  id         String       @id @default(uuid()) @db.Uuid
+  userId     String       @db.Uuid
+  sourceType RewardSource
+  sourceId   String       @db.Uuid
+  xp         Int
+  localDate  DateTime     @db.Date
+  createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([sourceType, sourceId])
+  @@index([userId, localDate, sourceType])
 }

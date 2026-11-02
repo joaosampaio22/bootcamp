@@ -158,6 +158,28 @@ button:disabled { cursor: wait; opacity: .55; }
 .pagination { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 12px; margin-top: 18px; }
 .profile-card { max-width: 540px; }
 .profile-card .app-form { margin-top: 0; }
+.focus-stage { text-align: center; padding: 48px 24px; }
+.focus-stage h2 { margin-top: 16px; overflow-wrap: anywhere; }
+.focus-countdown { font-size: clamp(68px, 9vw, 112px); font-weight: 500; letter-spacing: -4px; line-height: 1.2; font-variant-numeric: tabular-nums; margin: 36px 0 18px; }
+.focus-caption { color: #5b6c5d; font-size: 13px; line-height: 1.8; margin: 14px 0; }
+.focus-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 28px 0 12px; }
+.secondary-button { background: #e8efdf; color: #214b3d; }
+.secondary-button:hover { background: #dbe6cd; }
+.focus-setup { max-width: 440px; }
+.focus-setup select { width: 100%; font: inherit; font-weight: 400; min-height: 46px; padding: 12px; border: 1px solid #bac9b9; border-radius: 7px; background: white; color: #153d38; }
+.focus-setup select:focus-visible { outline: 2px solid #3b725a; outline-offset: 2px; }
+.duration-presets { display: flex; gap: 12px; flex-wrap: wrap; }
+.duration-presets button { border: 1px solid #bac9b9; padding: 10px 20px; border-radius: 7px; cursor: pointer; font-size: 13px; }
+.duration-presets button[aria-pressed=true] { background: #e8efdf; border-color: #3b725a; font-weight: 650; }
+.focus-history { list-style: none; margin: 0; padding: 0; }
+.focus-history li { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 20px 0; border-top: 1px solid #e5eadf; font-size: 13px; }
+.focus-history p { color: #5b6c5d; font-size: 12px; margin: 6px 0 0; }
+.focus-result { background: #edf4e5; }
+.focus-result h2 { margin-top: 12px; }
+.focus-result > p:not(.eyebrow) { margin-top: 18px; }
+.recovery-card > p { line-height: 1.8; margin-top: 18px; color: #52684f; }
+.recovery-card .app-form { max-width: 480px; }
+.recovery-card .focus-actions { justify-content: flex-start; margin-top: 0; }
 @media (max-width: 760px) {
   .access-page { grid-template-columns: 1fr; }
   .access-aside { display: none; }

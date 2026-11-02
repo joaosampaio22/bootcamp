@@ -34,6 +34,8 @@ describe('acesso e rotas privadas', () => {
     const fetch = vi.fn((url: string, init?: RequestInit) => {
       if (url.endsWith('/auth/me')) return Promise.resolve(json({}, 401));
       if (url.endsWith('/auth/register')) return Promise.resolve(json(session, 201));
+      if (url.endsWith('/focus-sessions/active')) return Promise.resolve(json(null));
+      if (url.includes('/focus-sessions?')) return Promise.resolve(json({ items: [], total: 0, totalXp: 0, page: 1, pageSize: 10 }));
       if (url.endsWith('/subjects') && init?.method === 'POST') { created = true; return Promise.resolve(json({ id: 'subject-demo', name: 'História livre' }, 201)); }
       if (url.includes('/subjects?')) return Promise.resolve(json({ items: created ? [{ id: 'subject-demo', name: 'História livre', archivedAt: null }] : [], total: created ? 1 : 0, page: 1, pageSize: 20 }));
       return Promise.reject(new Error('Requisição inesperada: ' + url));
@@ -45,6 +47,7 @@ describe('acesso e rotas privadas', () => {
     await user.type(screen.getByLabelText('E-mail'), 'demo@example.test');
     await user.type(screen.getByLabelText('Senha'), 'senha-fictícia-longa');
     await user.click(screen.getByRole('button', { name: 'Criar minha conta' }));
+    await user.click(await screen.findByRole('link', { name: 'Disciplinas' }));
     await screen.findByRole('heading', { name: 'Suas disciplinas' });
     expect(await screen.findByText('Seu próximo aprendizado começa aqui.')).toBeInTheDocument();
     await user.type(screen.getByLabelText('Nome da disciplina'), 'História livre');

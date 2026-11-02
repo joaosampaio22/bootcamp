@@ -13,6 +13,7 @@ export function configureApplication(app: INestApplication, environment: Environ
   app.use((request: IdentifiedRequest, response: Response, next: NextFunction) => {
     request.requestId = randomUUID();
     response.setHeader('X-Request-Id', request.requestId);
+    response.setHeader('Cache-Control', 'no-store');
     if (request.path !== '/api/v1' && !request.path.startsWith('/api/v1/')) {
       response.status(404).json({ error: { code: 'NOT_FOUND', message: 'Recurso não encontrado.', details: {}, requestId: request.requestId } });
       return;

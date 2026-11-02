@@ -4,6 +4,7 @@ import { HealthModule } from './health/health.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { SubjectsModule } from './subjects/subjects.module.js';
 import { UsersModule } from './users/users.module.js';
+import { FocusModule } from './focus/focus.module.js';
 
-@Module({ imports: [EnvironmentModule, HealthModule, AuthModule, SubjectsModule, UsersModule] })
+@Module({ imports: [EnvironmentModule, HealthModule, AuthModule, SubjectsModule, UsersModule, FocusModule] })
 export class AppModule {}

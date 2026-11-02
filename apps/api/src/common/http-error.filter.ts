@@ -21,6 +21,8 @@ export class HttpErrorFilter implements ExceptionFilter {
       const body = exception.getResponse();
       code = status === 404 ? 'NOT_FOUND' : status === 400 ? 'VALIDATION_ERROR' : `HTTP_${status}`;
       if (typeof body === 'object' && body !== null && 'message' in body) {
+        if ('code' in body && typeof body.code === 'string') code = body.code;
+        if ('details' in body && typeof body.details === 'object' && body.details !== null && !Array.isArray(body.details)) details = body.details as Record<string, unknown>;
         if (Array.isArray(body.message)) {
           message = 'Confira os dados enviados.';
           details = { messages: body.message };
