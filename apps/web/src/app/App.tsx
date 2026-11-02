@@ -31,11 +31,11 @@ export function App() {
             <div className="development-note">
               <span className="development-icon" aria-hidden="true">✳</span>
               <div>
-                <p className="development-title">Seu espaço está em construção</p>
-                <p className="development-description">Foco, conteúdos, revisões, pontos de retorno, Academia Viva e estatísticas já estão disponíveis. O projeto segue para os ajustes finais de apresentação.</p>
+                <p className="development-title">Seu espaço de estudo está pronto</p>
+                <p className="development-description">Foco, conteúdos, revisões, pontos de retorno, Academia Viva e estatísticas. Um passo de cada vez, no seu ritmo.</p>
               </div>
             </div>
-            <a className="primary-link" href="#projeto">Veja o que vem por aí <ArrowIcon down /></a>
+            <a className="primary-link" href="#projeto">Conheça seu espaço <ArrowIcon down /></a>
           </div>
           <div className="hero-art">
             <div className="art-label"><span aria-hidden="true">✦</span> Pequenos passos. Novos caminhos.</div>

@@ -1,9 +1,11 @@
 node_modules/
 dist/
 coverage/
+__pycache__/
 *.tsbuildinfo
 .env
 .env.*
+.demo-access.json
 !.env.example
 !**/.env.example
 apps/api/src/generated/

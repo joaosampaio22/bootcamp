@@ -1,0 +1,144 @@
+{
+  "tool": "axe-core 4.14.0",
+  "date": "2026-11-02",
+  "results": [
+    {
+      "name": "login",
+      "violations": [],
+      "passes": 14,
+      "incomplete": []
+    },
+    {
+      "name": "início",
+      "violations": [],
+      "passes": 16,
+      "incomplete": []
+    },
+    {
+      "name": "disciplinas",
+      "violations": [],
+      "passes": 25,
+      "incomplete": []
+    },
+    {
+      "name": "foco",
+      "violations": [],
+      "passes": 23,
+      "incomplete": []
+    },
+    {
+      "name": "conteúdos",
+      "violations": [],
+      "passes": 19,
+      "incomplete": []
+    },
+    {
+      "name": "retorno",
+      "violations": [],
+      "passes": 17,
+      "incomplete": []
+    },
+    {
+      "name": "revisões",
+      "violations": [],
+      "passes": 15,
+      "incomplete": []
+    },
+    {
+      "name": "academia",
+      "violations": [],
+      "passes": 20,
+      "incomplete": []
+    },
+    {
+      "name": "estatísticas",
+      "violations": [],
+      "passes": 23,
+      "incomplete": []
+    },
+    {
+      "name": "perfil",
+      "violations": [],
+      "passes": 18,
+      "incomplete": []
+    },
+    {
+      "name": "foco ativo",
+      "violations": [],
+      "passes": 18,
+      "incomplete": []
+    },
+    {
+      "name": "foco pausado",
+      "violations": [],
+      "passes": 18,
+      "incomplete": []
+    },
+    {
+      "name": "resultado do foco",
+      "violations": [],
+      "passes": 23,
+      "incomplete": []
+    },
+    {
+      "name": "detalhe conteúdo",
+      "violations": [],
+      "passes": 16,
+      "incomplete": []
+    },
+    {
+      "name": "editar conteúdo",
+      "violations": [],
+      "passes": 18,
+      "incomplete": []
+    },
+    {
+      "name": "novo retorno",
+      "violations": [],
+      "passes": 18,
+      "incomplete": []
+    },
+    {
+      "name": "revisão oculta",
+      "violations": [],
+      "passes": 15,
+      "incomplete": []
+    },
+    {
+      "name": "revisão revelada",
+      "violations": [],
+      "passes": 16,
+      "incomplete": []
+    },
+    {
+      "name": "conteúdo móvel",
+      "violations": [],
+      "passes": 18,
+      "incomplete": []
+    },
+    {
+      "name": "retorno móvel",
+      "violations": [],
+      "passes": 18,
+      "incomplete": []
+    },
+    {
+      "name": "perfil móvel",
+      "violations": [],
+      "passes": 18,
+      "incomplete": []
+    },
+    {
+      "name": "academia móvel",
+      "violations": [],
+      "passes": 20,
+      "incomplete": []
+    },
+    {
+      "name": "estatísticas móveis",
+      "violations": [],
+      "passes": 24,
+      "incomplete": []
+    }
+  ]
+}

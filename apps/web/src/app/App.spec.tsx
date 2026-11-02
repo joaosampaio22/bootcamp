@@ -14,8 +14,8 @@ describe('base do Estudo em Dia', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(healthyResponse()));
     render(<App />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Estudar é um caminho.');
-    expect(screen.getByText('Seu espaço está em construção')).toBeVisible();
-    expect(screen.getByRole('link', { name: /Veja o que vem por aí/ })).toHaveAttribute('href', '#projeto');
+    expect(screen.getByText('Seu espaço de estudo está pronto')).toBeVisible();
+    expect(screen.getByRole('link', { name: /Conheça seu espaço/ })).toHaveAttribute('href', '#projeto');
     expect(screen.queryByRole('button', { name: /Iniciar foco/ })).not.toBeInTheDocument();
     await screen.findByText('Conexão verificada');
   });

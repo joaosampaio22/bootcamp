@@ -16,6 +16,7 @@ model User {
   emailNormalized String   @unique @db.VarChar(254)
   passwordHash    String   @db.Text
   timeZone        String   @default("America/Sao_Paulo") @db.VarChar(80)
+  isDemo          Boolean  @default(false)
   createdAt       DateTime @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime @updatedAt @db.Timestamptz(3)
   sessions        AuthSession[]

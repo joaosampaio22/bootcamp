@@ -1,0 +1,147 @@
+1
+00:00:00,000 --> 00:00:05,110
+Estudo em Dia ajuda a organizar o estudo livre, manter revisões e retomar
+
+2
+00:00:05,110 --> 00:00:10,221
+o próximo passo. Esta gravação mostra o aplicativo funcionando com API e banco
+
+3
+00:00:10,221 --> 00:00:15,331
+reais. A conta e o progresso inicial são fictícios, preparados em um banco
+
+4
+00:00:15,331 --> 00:00:18,869
+local separado. A narração é sintética, gerada neste computador.
+
+5
+00:00:19,869 --> 00:00:24,895
+Depois de entrar, vemos o próximo passo salvo. Vou criar História da Arte
+
+6
+00:00:24,895 --> 00:00:29,920
+para mostrar que as disciplinas são livres. O aplicativo não exige catálogo, curso
+
+7
+00:00:29,920 --> 00:00:34,172
+ou exercício pronto. Cada pessoa registra os assuntos que deseja estudar.
+
+8
+00:00:35,172 --> 00:00:40,240
+O foco pode começar sem disciplina ou conteúdo. Nesta sessão curta, vou pausar,
+
+9
+00:00:40,240 --> 00:00:45,309
+atualizar a página, retomar e encerrar. O estado vem do servidor. Como não
+
+10
+00:00:45,309 --> 00:00:50,377
+houve cinco minutos de estudo, a sessão fica registrada com zero pontos. O
+
+11
+00:00:50,377 --> 00:00:54,666
+cronômetro não comprova atenção, e não acelerei o relógio nesta demonstração.
+
+12
+00:00:55,666 --> 00:01:00,367
+O registro de conteúdo é opcional depois do foco. Vou escolher minha disciplina,
+
+13
+00:01:00,367 --> 00:01:05,068
+dar um título e escrever uma nota curta. Também posso guardar o endereço
+
+14
+00:01:05,068 --> 00:01:09,769
+do meu próprio material. Com a revisão habilitada, a primeira data fica agendada
+
+15
+00:01:09,769 --> 00:01:11,938
+para amanhã no fuso do perfil.
+
+16
+00:01:12,938 --> 00:01:18,614
+Na fila existe uma revisão vencida, preparada pela demonstração. Primeiro tento lembrar pelo
+
+17
+00:01:18,614 --> 00:01:24,289
+título. As notas começam ocultas. Posso revelá-las e fazer uma autoavaliação. Ao escolher
+
+18
+00:01:24,289 --> 00:01:29,965
+Lembrei bem, o servidor registra a tentativa, agenda a próxima data e concede
+
+19
+00:01:29,965 --> 00:01:35,640
+cinco pontos, sem duplicar a recompensa em reenvios. Não há correção objetiva do
+
+20
+00:01:35,640 --> 00:01:36,077
+conteúdo.
+
+21
+00:01:37,077 --> 00:01:42,121
+Agora deixo uma próxima ação concreta: abrir minhas anotações e comparar duas obras.
+
+22
+00:01:42,121 --> 00:01:47,165
+O ponto de retorno pode existir sem conteúdo vinculado. Depois de sair e
+
+23
+00:01:47,165 --> 00:01:52,209
+entrar novamente, o contexto continua salvo e aparece no início. Assim, não preciso
+
+24
+00:01:52,209 --> 00:01:55,313
+reconstruir meu plano de estudo a cada acesso.
+
+25
+00:01:56,313 --> 00:02:01,305
+A demonstração começou com noventa e cinco pontos fictícios de foco. A revisão
+
+26
+00:02:01,305 --> 00:02:06,298
+acrescentou cinco, chegando a cem e liberando o Campus. Os quatro estágios são
+
+27
+00:02:06,298 --> 00:02:11,290
+automáticos. Não existem moedas, compras ou edição de cidade. O extrato mostra a
+
+28
+00:02:11,290 --> 00:02:15,514
+origem dos pontos, e dias de ausência não apagam o progresso.
+
+29
+00:02:16,514 --> 00:02:22,349
+As estatísticas mostram tempo registrado, sessões finalizadas, revisões e dias com estudo no
+
+30
+00:02:22,349 --> 00:02:28,183
+período escolhido. O gráfico permite consultar cada dia e tem uma tabela equivalente.
+
+31
+00:02:28,183 --> 00:02:34,018
+Sessões em andamento e descartadas ficam fora desses totais. O relatório não mede
+
+32
+00:02:34,018 --> 00:02:35,813
+inteligência, retenção ou concentração.
+
+33
+00:02:36,932 --> 00:02:42,453
+O projeto usa React e TypeScript na interface, Nest no servidor, Prisma e
+
+34
+00:02:42,453 --> 00:02:47,974
+PostgreSQL. O Codex auxiliou o desenvolvimento, com decisões e resultados reais documentados. A
+
+35
+00:02:47,974 --> 00:02:53,495
+validação final passou em duzentos e noventa e cinco testes, além da auditoria
+
+36
+00:02:53,495 --> 00:02:59,016
+automática de acessibilidade. O código, as instruções e este vídeo fazem parte da
+
+37
+00:02:59,016 --> 00:03:03,263
+entrega. A execução foi local; não foi feita hospedagem pública.

@@ -24,6 +24,6 @@ export function PrivateLayout() {
       <nav aria-label="Navegação principal"><NavLink to="/app" end>Início</NavLink><NavLink to="/app/focus">Foco</NavLink><NavLink to="/app/subjects">Disciplinas</NavLink><NavLink to="/app/contents">Conteúdos</NavLink><NavLink to="/app/reviews">Revisões</NavLink><NavLink to="/app/continue">Onde parei</NavLink><NavLink to="/app/academy">Academia</NavLink><NavLink to="/app/statistics">Estatísticas</NavLink><NavLink to="/app/settings">Meu perfil</NavLink></nav>
       <div className="sidebar-bottom"><p>{auth.session.user.name}</p><button onClick={logout} disabled={busy}>{busy ? 'Saindo…' : 'Sair da conta'}</button>{error && <p role="alert">{error}</p>}</div>
     </aside>
-    <main id="workspace-main" className="workspace-content"><Outlet /></main>
+    <main id="workspace-main" className="workspace-content" tabIndex={-1}>{auth.session.user.isDemo && <p className="demo-notice">Demonstração local · dados fictícios. O progresso inicial é um exemplo preparado.</p>}<Outlet /></main>
   </div>;
 }

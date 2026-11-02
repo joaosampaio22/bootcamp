@@ -36,6 +36,7 @@ export function AccessPage({ register = false }: { register?: boolean }) {
     </aside>
     <main className="access-main"><div className="access-card">
       <Link className="mobile-brand" to="/">estudoemdia.</Link>
+      {import.meta.env.VITE_DEMO_MODE === 'true' && <p className="demo-notice">Demonstração local · use o acesso fictício preparado neste computador.</p>}
       <p className="eyebrow">BEM-VINDO AO SEU ESPAÇO</p>
       <h1>{register ? 'Vamos começar?' : 'Bom ter você de volta.'}</h1>
       <p>{register ? 'Crie sua conta e organize suas disciplinas.' : 'Entre para continuar de onde parou.'}</p>

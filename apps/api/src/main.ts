@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module.js';
 import { configureApplication } from './common/configure-application.js';
+import { configureRequestBody } from './common/request-body.js';
 import { ENVIRONMENT } from './common/environment.js';
 import type { Environment } from './common/environment.js';
 
@@ -15,7 +16,7 @@ async function bootstrap(): Promise<void> {
   });
   const environment = app.get<Environment>(ENVIRONMENT);
   configureApplication(app, environment);
-  app.useBodyParser('json', { limit: '32kb' });
+  configureRequestBody(app);
   app.enableShutdownHooks();
   await app.listen(environment.port, environment.host);
 }

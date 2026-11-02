@@ -20,4 +20,14 @@ describe('configuração dos cookies e da chave de sessão', () => {
   it('não aceita valor ambíguo para COOKIE_SECURE', () => {
     expect(() => readAuthSettings({ JWT_SECRET: key, COOKIE_SECURE: 'yes' }, local)).toThrow('COOKIE_SECURE');
   });
+  it('demonstração usa outro cookie sem sobrescrever a sessão normal', () => {
+    expect(readAuthSettings({ JWT_SECRET: key, DEMO_MODE: 'true' },local).cookieName).toBe('estudo_demo_session');
+    expect(readAuthSettings({ JWT_SECRET: key, DEMO_MODE: 'true', COOKIE_SECURE: 'true' },local).cookieName).toBe('__Host-estudo_demo_session');
+  });
+  it('não permite ativar demonstração em produção', () => {
+    expect(() => readAuthSettings({ JWT_SECRET: key, DEMO_MODE: 'true' },production)).toThrow('produção');
+  });
+  it('não aceita valor ambíguo para DEMO_MODE', () => {
+    expect(() => readAuthSettings({ JWT_SECRET: key, DEMO_MODE: 'yes' },local)).toThrow('DEMO_MODE');
+  });
 });

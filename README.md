@@ -4,22 +4,42 @@ Um espaço para estudar qualquer conteúdo, preservar pontos de retorno e organi
 
 ## Baixar e visualizar sem instalar
 
-No GitHub, use **Code → Download ZIP**, extraia o arquivo e abra **`PREVIA.html`** no navegador. O arquivo mostra capturas reais da academia e das estatísticas da **Etapa 5**, com dados fictícios e datas simuladas por um relógio de teste, sem instalar nada. É uma galeria visual; para usar os formulários e salvar seus próprios dados, execute a aplicação conforme abaixo.
+No GitHub, use **Code → Download ZIP**, extraia o arquivo e abra **`APRESENTACAO.html`** para assistir à demonstração real narrada de aproximadamente três minutos, sem instalar o app. Também pode abrir **`Video/demonstracao-narrada.mp4`** diretamente em um player. Há legendas, transcrição e a galeria **`PREVIA.html`**. A gravação usa dados fictícios e narração sintética local em português.
 
 Para desenvolver ou executar com API e banco, siga as instruções abaixo.
 
-**Estado atual: Etapas 0–5 implementadas e verificadas nesta instância.** Cadastro, perfil, disciplinas, foco, conteúdos, continuidade, revisões, academia e estatísticas funcionam com API e PostgreSQL. A academia deriva o estágio do XP persistido; relatórios contam tempo, sessões finalizadas e revisões por período. Consulte o [relatório atual](docs/evidencias-ia/ETAPA-5.md).
+**MVP local implementado — Etapas 0–6 verificadas nesta instância.** Cadastro, perfil, disciplinas, foco, conteúdos, continuidade, revisões, academia e estatísticas funcionam com API e PostgreSQL. A entrega inclui demonstração isolada, correções de acessibilidade, auditoria de escopo, vídeo e material de apresentação. Consulte o [relatório final](docs/evidencias-ia/ETAPA-6.md) e a [auditoria do MVP](docs/apresentacao/AUDITORIA_FINAL.md).
 
-**Próxima etapa: polimento e apresentação.** O núcleo funcional está implementado; auditoria final, seed de demonstração, roteiro e gravação pertencem à Etapa 6 de [docs/07_PLANO_CODEX.md](docs/07_PLANO_CODEX.md). Os relatos anteriores são registros históricos.
+Esta entrega executa localmente. Hospedagem pública, identificação real da submissão e envio de formulário não foram realizados. Os relatórios de etapas anteriores são registros históricos.
 
 ## Pré-requisitos
 
 - Node.js **24.19.0** (ver `.nvmrc`) e npm **11.x**; ambiente usa npm 11.9.0.
 - Docker Engine e Docker Compose v2, com daemon ativo e permissão de acesso.
 - Portas locais 3000 (API), 5173 (SPA), 5432 (PostgreSQL de desenvolvimento) e 5433 (PostgreSQL de testes) livres.
+- Para a demonstração opcional: portas 3005 (API), 5175 (SPA) e 5434 (PostgreSQL demo).
 - Acesso ao registro npm, à imagem oficial do PostgreSQL e a `binaries.prisma.sh` (binário e checksum oficiais do Prisma), ou compilação oficial alternativa descrita abaixo.
 
 React 19 + Vite 8 + Tailwind 4, NestJS 12, TypeScript strict, PostgreSQL 17 e Prisma **7.10.1**, com client ESM e driver adapter `pg`. Versões de dependências e imagem do banco estão fixadas; o lockfile faz parte do projeto.
+
+## Experimentar com dados fictícios
+
+Na raiz do projeto, com Node e Docker preparados:
+
+```sh
+npm ci
+npm run setup:env
+npm run demo:setup
+npm run demo
+```
+
+Abra **http://localhost:5175/login** e consulte **`.demo-access.json`**, gerado somente no seu computador, para entrar. Não publique esse arquivo. Ele não fica no Git, no ZIP nem acessível pelo servidor Vite. A interface identifica a demonstração e seus dados fictícios.
+
+`demo:setup` sobe somente o serviço `db-demo`, aplica migrações, compila a API e prepara uma conta fictícia com História/Inglês, notas, material, retorno, uma revisão vencida e outra futura. O histórico inicial ilustrativo soma 95 XP. Uma revisão válida permite demonstrar a passagem para o estágio II. O relógio da aplicação continua normal; uma sessão encerrada antes de cinco minutos não concede XP.
+
+O banco `_demo`, volume, chave e cookie são separados dos usados no app normal. Servidores e banco da demo ficam em loopback. O comando recusa produção, banco remoto e colisão com desenvolvimento/teste. Repetir **`npm run demo:seed`** preserva a conta, as edições e o progresso; não reinicia o exemplo. Se perder o acesso local, **`npm run demo:access`** gera outra senha e revoga as sessões antigas sem apagar progresso. `Ctrl+C` encerra os servidores; o volume permanece. Não remova volumes para repetir a seed.
+
+Para usar uma conta própria sem dados preparados, siga a execução normal abaixo.
 
 ## Primeira execução
 
@@ -143,6 +163,8 @@ npm run verify
 - `npm run db:status`: estado das migrações de desenvolvimento.
 - `npm run db:migrate:dev -- --name nome`: para criar novas migrações durante desenvolvimento; `db:migrate` somente aplica migrações versionadas.
 
+A verificação final teve **295 testes aprovados**. A auditoria axe-core 4.14.0 cobriu 23 estados desktop/móveis, com zero violações e zero itens pendentes na execução final; isso não equivale a certificação completa de acessibilidade. Foram conferidos também teclado, foco ao mudar de página e movimento reduzido. O limite JSON de 64 KiB comporta as notas UTF-8 válidas; erros de JSON/tamanho mantêm envelope estruturado e não refletem o corpo enviado.
+
 ## Build e processos
 
 ```sh
@@ -198,8 +220,16 @@ scripts/        configuração local e runner seguro de integração
 docs/           especificação original, decisões e evidências reais
 ```
 
-O banco possui seis migrações, incluindo `StudyContent`, `ReviewSchedule`, `ReturnPoint`, `ReviewAttempt` e índices de consultas por encerramento/tentativa/evento. Índices parciais garantem disciplina ativa única por nome/conta e uma sessão aberta por conta; cada conteúdo possui no máximo uma agenda e cada versão processada tem no máximo uma tentativa. Eventos têm origem única; o lock de usuário serializa escritas de disciplinas, conteúdos, continuidade, foco e revisões. FKs compostas reforçam propriedade de vínculos. Não há seed automática nem credenciais de demonstração no código. As contas fictícias das verificações são removidas ao final.
+O banco possui sete migrações, incluindo `StudyContent`, `ReviewSchedule`, `ReturnPoint`, `ReviewAttempt`, índices de relatório e o marcador `User.isDemo`. Índices parciais garantem disciplina ativa única por nome/conta e uma sessão aberta por conta; cada conteúdo possui no máximo uma agenda e cada versão processada tem no máximo uma tentativa. Eventos têm origem única; o lock de usuário serializa escritas de disciplinas, conteúdos, continuidade, foco e revisões. FKs compostas reforçam propriedade de vínculos. A seed só roda por comando explícito no banco demo. Contas comuns não podem se marcar como demo pela API. Fixtures auxiliares de teste são removidas; a demonstração local permanece para uso.
 
-A próxima entrega do plano é **Etapa 6 — polimento e apresentação**: auditoria do fluxo completo, acessibilidade, demonstração isolada e material de apresentação.
+## Preparar uma submissão
 
-Referências: [documentação principal](docs/00_LEIA_PRIMEIRO.md), [autenticação e engine](docs/decisoes/ADR-0003-autenticacao-persistida-engine.md), [foco e XP](docs/decisoes/ADR-0004-foco-recompensas.md), [conteúdos e continuidade](docs/decisoes/ADR-0005-conteudos-continuidade.md), [revisões](docs/decisoes/ADR-0006-revisoes-periodicas.md), [academia e métricas](docs/decisoes/ADR-0007-academia-estatisticas.md), [resultados atuais](docs/evidencias-ia/ETAPA-5.md).
+O [roteiro](docs/apresentacao/roteiro-demonstracao.md), a [transcrição](docs/apresentacao/transcricao.md) e a [auditoria](docs/apresentacao/AUDITORIA_FINAL.md) acompanham o vídeo. Para montar a estrutura Code/Documentation/Video, com Python 3 e Git, informe **sua identificação real** e um arquivo ZIP novo:
+
+```sh
+python3 scripts/package-submission.py --identity SEU_ID_SEU_NOME --output /caminho/novo/pacote.zip
+```
+
+Troque os valores de exemplo. O script usa arquivos versionados, exclui credenciais/dependências/builds e confere a integridade do ZIP. Não sobrescreve arquivos, hospeda o aplicativo nem envia formulário. Identificação, URL de hospedagem exigida e prazo precisam ser conferidos no processo de avaliação real.
+
+Referências: [documentação principal](docs/00_LEIA_PRIMEIRO.md), [autenticação e engine](docs/decisoes/ADR-0003-autenticacao-persistida-engine.md), [foco e XP](docs/decisoes/ADR-0004-foco-recompensas.md), [conteúdos e continuidade](docs/decisoes/ADR-0005-conteudos-continuidade.md), [revisões](docs/decisoes/ADR-0006-revisoes-periodicas.md), [academia e métricas](docs/decisoes/ADR-0007-academia-estatisticas.md), [demo e apresentação](docs/decisoes/ADR-0008-demo-polimento.md), [resultados finais](docs/evidencias-ia/ETAPA-6.md).

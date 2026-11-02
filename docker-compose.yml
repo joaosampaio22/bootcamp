@@ -33,5 +33,18 @@ services:
     tmpfs:
       - /var/lib/postgresql/data
 
+  db-demo:
+    <<: *postgres
+    profiles: [demo]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Execute npm run setup:env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Execute npm run setup:env}
+      POSTGRES_DB: estudo_em_dia_demo
+    ports:
+      - "127.0.0.1:${POSTGRES_DEMO_PORT:-5434}:5432"
+    volumes:
+      - postgres-demo-data:/var/lib/postgresql/data
+
 volumes:
   postgres-data:
+  postgres-demo-data:

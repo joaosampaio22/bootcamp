@@ -16,9 +16,10 @@ import { ReviewPage } from '../features/reviews/ReviewPage';
 import { ReviewHistoryPage } from '../features/reviews/ReviewHistoryPage';
 import { AcademyPage } from '../features/progress/AcademyPage';
 import { StatisticsPage } from '../features/progress/StatisticsPage';
+import { RouteFocus } from '../components/RouteFocus';
 
 export function Router() {
-  return <Routes><Route path="/" element={<App />} />
+  return <><RouteFocus /><Routes><Route path="/" element={<App />} />
     <Route path="/login" element={<AccessPage />} /><Route path="/register" element={<AccessPage register />} />
     <Route path="/app" element={<PrivateLayout />}><Route index element={<DashboardPage />} /><Route path="focus" element={<FocusPage />} /><Route path="subjects" element={<SubjectsPage />} /><Route path="settings" element={<ProfilePage />} />
       <Route path="contents" element={<ContentsPage />} /><Route path="contents/new" element={<ContentEditor />} /><Route path="contents/:id" element={<ContentDetail />} /><Route path="contents/:id/edit" element={<ContentEditor />} />
@@ -27,5 +28,5 @@ export function Router() {
       <Route path="academy" element={<AcademyPage />} /><Route path="statistics" element={<StatisticsPage />} />
     </Route>
     <Route path="*" element={<main className="app-loading"><h1>Página não encontrada</h1><a href="/">Voltar ao início</a></main>} />
-  </Routes>;
+  </Routes></>;
 }

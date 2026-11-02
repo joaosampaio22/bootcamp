@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-export interface User { id: string; name: string; emailNormalized: string; timeZone: string }
+export interface User { id: string; name: string; emailNormalized: string; timeZone: string; isDemo: boolean }
 export interface Session { user: User; csrfToken: string }
 export interface AuthState {
   session: Session | null; loading: boolean; error: string;

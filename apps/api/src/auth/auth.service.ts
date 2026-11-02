@@ -10,7 +10,7 @@ import { SessionTokenCodec, SESSION_TTL_SECONDS } from './session-token.js';
 import type { SessionIdentity } from './session-token.js';
 import type { LoginDto, RegisterDto } from './auth.dto.js';
 
-export const PUBLIC_USER = { id: true, name: true, emailNormalized: true, timeZone: true, createdAt: true } as const;
+export const PUBLIC_USER = { id: true, name: true, emailNormalized: true, timeZone: true, isDemo: true, createdAt: true } as const;
 
 @Injectable()
 export class AuthService implements OnModuleInit {
