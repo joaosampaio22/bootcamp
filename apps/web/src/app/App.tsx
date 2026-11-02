@@ -32,7 +32,7 @@ export function App() {
               <span className="development-icon" aria-hidden="true">✳</span>
               <div>
                 <p className="development-title">Seu espaço está em construção</p>
-                <p className="development-description">Foco, conteúdos, pontos de retorno e revisões com autoavaliação já estão disponíveis. Academia Viva e estatísticas chegam nas próximas etapas.</p>
+                <p className="development-description">Foco, conteúdos, revisões, pontos de retorno, Academia Viva e estatísticas já estão disponíveis. O projeto segue para os ajustes finais de apresentação.</p>
               </div>
             </div>
             <a className="primary-link" href="#projeto">Veja o que vem por aí <ArrowIcon down /></a>

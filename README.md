@@ -1,16 +1,16 @@
 # Estudo em Dia
 
-Um espaço para estudar qualquer conteúdo, preservar pontos de retorno e organizar revisões. A **Academia Viva** será uma representação decorativa do progresso, sem economia, exercícios prontos ou LLM em produção.
+Um espaço para estudar qualquer conteúdo, preservar pontos de retorno e organizar revisões. A **Academia Viva** representa o progresso registrado, com quatro estágios decorativos, sem economia, exercícios prontos ou LLM em produção.
 
 ## Baixar e visualizar sem instalar
 
-No GitHub, use **Code → Download ZIP**, extraia o arquivo e abra **`PREVIA.html`** no navegador. O arquivo mostra capturas reais das revisões da **Etapa 4**, com dados fictícios e datas simuladas por um relógio de teste, sem instalar nada. É uma galeria visual; para usar os formulários e salvar seus próprios dados, execute a aplicação conforme abaixo.
+No GitHub, use **Code → Download ZIP**, extraia o arquivo e abra **`PREVIA.html`** no navegador. O arquivo mostra capturas reais da academia e das estatísticas da **Etapa 5**, com dados fictícios e datas simuladas por um relógio de teste, sem instalar nada. É uma galeria visual; para usar os formulários e salvar seus próprios dados, execute a aplicação conforme abaixo.
 
 Para desenvolver ou executar com API e banco, siga as instruções abaixo.
 
-**Estado atual: Etapas 0–4 implementadas e verificadas nesta instância.** Cadastro, perfil, disciplinas, foco, conteúdos, pontos de retorno e revisões funcionam com API e PostgreSQL. Revisões permitem tentar lembrar, revelar notas e autoavaliar; o servidor registra histórico, próxima data e XP atomicamente. O início destaca próxima ação e quantidade de conteúdos para revisar. Consulte o [relatório atual](docs/evidencias-ia/ETAPA-4.md).
+**Estado atual: Etapas 0–5 implementadas e verificadas nesta instância.** Cadastro, perfil, disciplinas, foco, conteúdos, continuidade, revisões, academia e estatísticas funcionam com API e PostgreSQL. A academia deriva o estágio do XP persistido; relatórios contam tempo, sessões finalizadas e revisões por período. Consulte o [relatório atual](docs/evidencias-ia/ETAPA-5.md).
 
-**O MVP completo ainda está em desenvolvimento:** academia, estatísticas e polimento pertencem às próximas etapas de [docs/07_PLANO_CODEX.md](docs/07_PLANO_CODEX.md). Os relatos anteriores são registros históricos.
+**Próxima etapa: polimento e apresentação.** O núcleo funcional está implementado; auditoria final, seed de demonstração, roteiro e gravação pertencem à Etapa 6 de [docs/07_PLANO_CODEX.md](docs/07_PLANO_CODEX.md). Os relatos anteriores são registros históricos.
 
 ## Pré-requisitos
 
@@ -39,7 +39,7 @@ npm run dev
 
 `npm ci` gera o client Prisma pelo `postinstall`; essa geração não exige banco ativo nem `.env`. `setup:env` gera uma senha do banco e uma chave JWT **aleatórias, somente locais**, em `.env` com permissão restrita, sem exibir os valores. Reexecutar preserva as variáveis existentes e adiciona a chave JWT se ainda estiver ausente. Não use nem versione as credenciais locais em hospedagem pública.
 
-Abra **http://localhost:5173/register** para criar sua conta; o app abre **/app** após entrar. Início, foco, disciplinas, conteúdos, revisões, “Onde parei” e perfil ficam na navegação. A API usa a porta **3000**. O Vite encaminha `/api` para a API sem expor segredos ao navegador. Use `localhost` na interface: o padrão `FRONTEND_ORIGIN=http://localhost:5173` rejeita escritas originadas de `http://127.0.0.1:5173`. Se escolher outra origem, configure-a explicitamente no `.env`.
+Abra **http://localhost:5173/register** para criar sua conta; o app abre **/app** após entrar. Início, foco, disciplinas, conteúdos, revisões, “Onde parei”, academia, estatísticas e perfil ficam na navegação. A API usa a porta **3000**. O Vite encaminha `/api` para a API sem expor segredos ao navegador. Use `localhost` na interface: o padrão `FRONTEND_ORIGIN=http://localhost:5173` rejeita escritas originadas de `http://127.0.0.1:5173`. Se escolher outra origem, configure-a explicitamente no `.env`.
 
 Verifique em outro terminal:
 
@@ -79,7 +79,7 @@ As transições aceitam `expectedVersion` para detectar abas desatualizadas. Os 
 - “Onde parei” exige somente uma próxima ação; contexto, disciplina, conteúdo e material são opcionais. Pontos abertos/concluídos persistem após refresh e novo login. O início destaca o ponto OPEN atualizado mais recentemente e permite voltar a uma sessão ativa ou pendente.
 - Arquivar preserva os vínculos e o histórico. Não existe exclusão física por API. Registrar conteúdo ou retorno não concede XP. Após o foco, os dois registros continuam opcionais.
 
-Rotas sob `/api/v1`: `GET/POST /contents`, `GET/PATCH /contents/:id`, `GET/POST /return-points`, `GET/PATCH /return-points/:id` e `GET /dashboard`. Listagens aceitam `page` e `pageSize` (máximo 100). Conteúdos aceitam `q`, `subjectId` e `archived=true|false`; retornos aceitam `status=OPEN|DONE`. Patch usa `archived` em conteúdos e `status` em retornos. Dashboard expõe `activeSession`, `nextReturnPoint` e `dueReviewCount`.
+Rotas sob `/api/v1`: `GET/POST /contents`, `GET/PATCH /contents/:id`, `GET/POST /return-points`, `GET/PATCH /return-points/:id` e `GET /dashboard`. Listagens aceitam `page` e `pageSize` (máximo 100). Conteúdos aceitam `q`, `subjectId` e `archived=true|false`; retornos aceitam `status=OPEN|DONE`. Patch usa `archived` em conteúdos e `status` em retornos. Dashboard expõe `activeSession`, `nextReturnPoint`, `dueReviewCount` e `academy` (null enquanto houver sessão aberta).
 
 ## Revisões periódicas
 
@@ -100,6 +100,29 @@ Cada conclusão válida registra tentativa, datas/índices anteriores e novos, e
 
 Rotas sob `/api/v1`: `GET /reviews/due`, `GET /reviews/upcoming`, `GET /reviews/:id`, `GET /reviews/:id/history` e `POST /reviews/:id/attempts`. Filas e histórico aceitam paginação; filas também aceitam `subjectId`. Avaliar exige `{rating, expectedVersion}` e `Idempotency-Key` UUID. Mesma chave/corpo retorna o comprovante original, inclusive depois de outras recompensas; reutilizar chave para outra operação ou enviar versão antiga retorna 409. Erros de estado incluem `error.details.schedule`. A tela mantém chave e corpo no retry de falha de rede; após refresh/novo login, consulte a agenda e o histórico persistidos.
 
+## Academia e estatísticas
+
+`GET /api/v1/academy` soma RewardEvent da conta e separa `focusXp`, `reviewXp` e `totalXp`. O servidor escolhe automaticamente um dos quatro SVGs originais do projeto:
+
+| Estágio | XP acumulado |
+|---|---:|
+| I — Fundação | 0–99 |
+| II — Campus | 100–349 |
+| III — Universidade | 350–799 |
+| IV — Cidade do Conhecimento | 800 ou mais |
+
+Não há gasto de XP, edição da cidade ou perda por ausência. O último estágio retorna `nextStageXp=null`. A prévia aparece no início quando não há sessão aberta; a tela de foco permanece sem gamificação. O extrato em `GET /api/v1/academy/events` permite conferir origem, data local do evento, XP (inclusive zero) e histórico. Aceita paginação e `sourceType=FOCUS_SESSION|REVIEW_ATTEMPT`.
+
+Em **Estatísticas**, consulte últimos 7/30/90 dias ou um período próprio. `GET /api/v1/statistics/summary` aceita `from` e `to` juntos, no formato `YYYY-MM-DD`, incluindo ambas as datas, até 366 dias. Sem parâmetros, consulta os últimos sete dias até hoje local. A resposta contém `timeZone`, `range`, `metrics` e `daily`, com dias vazios preenchidos por zeros reais da consulta.
+
+- Tempo registrado soma `activeSeconds` de sessões COMPLETED/INTERRUPTED pela data de encerramento, mesmo sem XP por duração curta/teto diário. Sessões abertas, pausadas, pendentes e descartadas são excluídas.
+- Sessões finalizadas incluem concluídas e interrompidas; a resposta também separa os dois contadores.
+- Revisões contam ReviewAttempt confirmadas, inclusive depois do teto de XP. Abrir ou revelar notas não conta como tentativa.
+- Dias com estudo exigem ao menos uma sessão finalizada de cinco minutos no dia. Não é uma sequência obrigatória nem uma medida de aprendizado.
+- O gráfico permite selecionar um dia por clique/teclado e possui tabela com os mesmos dados. Os limites UTC da consulta e o agrupamento seguem o fuso **atual** do perfil, inclusive DST. O extrato conserva a data local original de concessão do XP para auditoria dos tetos.
+
+Nenhuma leitura concede XP. Arquivar conteúdo/disciplina preserva seus registros nos totais. O produto não calcula retenção, domínio ou atenção.
+
 ## Verificação
 
 Com os bancos ativos e a migração aplicada:
@@ -115,7 +138,7 @@ npm run verify
 ```
 
 - `npm test`: verificações Node do bloqueio de bancos inseguros, Jest para segurança/configuração/saúde, regras de foco e datas civis, e Vitest/Testing Library para as telas implementadas. Não depende de banco ativo; requer dependências e client Prisma gerado para resolver os tipos da aplicação.
-- `npm run test:integration`: aplica migrações **no banco de testes** e executa Jest/Supertest com Nest e PostgreSQL reais. Verifica autenticação, isolamento, foco, XP, concorrência, recuperação, conteúdos, agenda, revisões, histórico, arquivamento e continuidade após login com relógio controlado. Falhas injetadas depois da recompensa verificam rollback de foco/revisão. O cenário de indisponibilidade do health injeta uma falha de consulta; não é um teste de queda física do servidor.
+- `npm run test:integration`: aplica migrações **no banco de testes** e executa Jest/Supertest com Nest e PostgreSQL reais. Verifica autenticação, isolamento, foco, XP, concorrência, recuperação, conteúdos, revisões, continuidade, academia e métricas por fuso/período. Falhas injetadas depois da recompensa verificam rollback de foco/revisão. O cenário de indisponibilidade do health injeta uma falha de consulta; não é um teste de queda física do servidor.
 - O runner de integração exige `TEST_DATABASE_URL` separado, com nome terminado em `_test`, antes de executar qualquer migração. Os registros fictícios criados pelos testes são removidos ao final.
 - `npm run db:status`: estado das migrações de desenvolvimento.
 - `npm run db:migrate:dev -- --name nome`: para criar novas migrações durante desenvolvimento; `db:migrate` somente aplica migrações versionadas.
@@ -175,8 +198,8 @@ scripts/        configuração local e runner seguro de integração
 docs/           especificação original, decisões e evidências reais
 ```
 
-O banco possui cinco migrações, incluindo `StudyContent`, `ReviewSchedule`, `ReturnPoint` e `ReviewAttempt`. Índices parciais garantem disciplina ativa única por nome/conta e uma sessão aberta por conta; cada conteúdo possui no máximo uma agenda e cada versão processada tem no máximo uma tentativa. Eventos têm origem única; o lock de usuário serializa escritas de disciplinas, conteúdos, continuidade, foco e revisões. FKs compostas reforçam propriedade de vínculos. Não há seed automática nem credenciais de demonstração no código. As contas fictícias das verificações são removidas ao final.
+O banco possui seis migrações, incluindo `StudyContent`, `ReviewSchedule`, `ReturnPoint`, `ReviewAttempt` e índices de consultas por encerramento/tentativa/evento. Índices parciais garantem disciplina ativa única por nome/conta e uma sessão aberta por conta; cada conteúdo possui no máximo uma agenda e cada versão processada tem no máximo uma tentativa. Eventos têm origem única; o lock de usuário serializa escritas de disciplinas, conteúdos, continuidade, foco e revisões. FKs compostas reforçam propriedade de vínculos. Não há seed automática nem credenciais de demonstração no código. As contas fictícias das verificações são removidas ao final.
 
-A próxima entrega do plano é **Etapa 5 — academia e estatísticas**: quatro estágios decorativos derivados de XP e métricas baseadas em registros reais.
+A próxima entrega do plano é **Etapa 6 — polimento e apresentação**: auditoria do fluxo completo, acessibilidade, demonstração isolada e material de apresentação.
 
-Referências: [documentação principal](docs/00_LEIA_PRIMEIRO.md), [autenticação e engine](docs/decisoes/ADR-0003-autenticacao-persistida-engine.md), [foco e XP](docs/decisoes/ADR-0004-foco-recompensas.md), [conteúdos e continuidade](docs/decisoes/ADR-0005-conteudos-continuidade.md), [revisões](docs/decisoes/ADR-0006-revisoes-periodicas.md), [resultados atuais](docs/evidencias-ia/ETAPA-4.md).
+Referências: [documentação principal](docs/00_LEIA_PRIMEIRO.md), [autenticação e engine](docs/decisoes/ADR-0003-autenticacao-persistida-engine.md), [foco e XP](docs/decisoes/ADR-0004-foco-recompensas.md), [conteúdos e continuidade](docs/decisoes/ADR-0005-conteudos-continuidade.md), [revisões](docs/decisoes/ADR-0006-revisoes-periodicas.md), [academia e métricas](docs/decisoes/ADR-0007-academia-estatisticas.md), [resultados atuais](docs/evidencias-ia/ETAPA-5.md).

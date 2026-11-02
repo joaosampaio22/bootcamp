@@ -1,0 +1,15 @@
+# ADR-0007 — Academia derivada de eventos e estatísticas por calendário
+
+Data: 02/11/2026, America/Sao_Paulo. Etapa 5. RF-050/052–055; RN-060–065; CA-016. RF-051 segue coberto pela idempotência de revisão da Etapa 4.
+
+1. Academia não persiste outro saldo ou estágio. Uma agregação de RewardEvent por usuário/origem gera totalXp, focusXp e reviewXp; estágios têm limiares 0/100/350/800. O último não tem próximo limiar. Não há escrita de XP/estágio, economia ou operação por ausência.
+2. Quatro SVGs originais estáticos estão em `apps/web/public/academy/`, com edifícios/jardins em perspectiva e sem recursos externos, marca ou personagem de terceiros. A API retorna assetUrl/estágio; o cliente apresenta o resultado sem conceder progresso. Preview no início só aparece sem sessão aberta. Não adicionamos animações à tela de foco.
+3. `GET /academy/events` oferece extrato paginado por origem, incluindo evento de zero XP, identificador de origem e caminho para histórico. Leituras usam usuário autenticado; títulos são recuperados de entidades da mesma conta. A data do extrato é a data local original do evento, preservada para auditar os limites diários.
+4. `GET /statistics/summary` recebe from/to civis inclusivos. O padrão é sete dias até hoje no fuso do perfil; limite de 366 dias por consulta mantém resposta/gráfico limitados. Datas inválidas, incompletas, invertidas e campos de identidade/fuso externos são rejeitados. Esse limite só restringe a consulta; não elimina registros antigos.
+5. Limites UTC vêm de meia-noite local inicial e meia-noite local após a data final usando PostgreSQL AT TIME ZONE parametrizado. O agrupamento usa o fuso atual do perfil. Dias de 23/25 horas não são tratados como blocos de 24 horas. A série de datas civis é gerada por calendário, sem alterar a data original de concessão de XP.
+6. Tempo é activeSeconds de sessões COMPLETED/INTERRUPTED, agrupado por finishedAt. Duração curta e teto de XP não retiram tempo ou sessão do relatório. RUNNING/PAUSED/NEEDS_RECONCILIATION/DISCARDED são excluídos. Sessões finalizadas contam ambos os resultados e também são separadas em contadores próprios. ReviewAttempt confirmada conta mesmo com XP zero; notas abertas não contam.
+7. daysWithStudy conta dias com ao menos uma sessão finalizada de >=300 segundos, condição explícita na interface. Não existe streak, punição por falta de uso ou promessa de domínio/atenção. Arquivar conteúdo/disciplina não exclui sessões ou tentativas das métricas.
+8. Estatísticas e extrato usam transações RepeatableRead para consistência das suas leituras. A agregação de XP da academia é uma única consulta. A sexta migração adiciona índices por usuário e finishedAt/createdAt para sessões, tentativas e eventos; não cria novas entidades ou saldo duplicado.
+9. A interface tem estados de espera, erro/retry, vazio e dados confirmados. Gráfico de foco aceita seleção por clique/teclado e tabela equivalente; períodos maiores usam rolagem interna do gráfico. O próximo passo de auditoria/polimento/seed/vídeo continua na Etapa 6.
+
+Validação e limitações: [ETAPA-5.md](../evidencias-ia/ETAPA-5.md).

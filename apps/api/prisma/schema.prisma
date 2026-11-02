@@ -93,6 +93,7 @@ model FocusSession {
 
   @@unique([id, userId])
   @@index([userId, startedAt(sort: Desc)])
+  @@index([userId, finishedAt(sort: Desc)])
   @@index([userId, status])
 }
 
@@ -134,6 +135,7 @@ model RewardEvent {
 
   @@unique([sourceType, sourceId])
   @@index([userId, localDate, sourceType])
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model StudyContent {
@@ -213,6 +215,7 @@ model ReviewAttempt {
   @@unique([scheduleId, scheduleVersionBefore])
   @@unique([userId, idempotencyKey])
   @@index([userId, scheduleId, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 enum ReturnPointStatus {

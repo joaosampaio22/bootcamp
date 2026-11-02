@@ -9,6 +9,8 @@ import { ContentsModule } from './contents/contents.module.js';
 import { ContinuityModule } from './continuity/continuity.module.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
 import { ReviewsModule } from './reviews/reviews.module.js';
+import { AcademyModule } from './academy/academy.module.js';
+import { StatisticsModule } from './statistics/statistics.module.js';
 
-@Module({ imports: [EnvironmentModule, HealthModule, AuthModule, SubjectsModule, UsersModule, FocusModule, ContentsModule, ContinuityModule, DashboardModule, ReviewsModule] })
+@Module({ imports: [EnvironmentModule, HealthModule, AuthModule, SubjectsModule, UsersModule, FocusModule, ContentsModule, ContinuityModule, DashboardModule, ReviewsModule, AcademyModule, StatisticsModule] })
 export class AppModule {}

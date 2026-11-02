@@ -14,6 +14,8 @@ import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { ReviewsPage } from '../features/reviews/ReviewsPage';
 import { ReviewPage } from '../features/reviews/ReviewPage';
 import { ReviewHistoryPage } from '../features/reviews/ReviewHistoryPage';
+import { AcademyPage } from '../features/progress/AcademyPage';
+import { StatisticsPage } from '../features/progress/StatisticsPage';
 
 export function Router() {
   return <Routes><Route path="/" element={<App />} />
@@ -22,6 +24,7 @@ export function Router() {
       <Route path="contents" element={<ContentsPage />} /><Route path="contents/new" element={<ContentEditor />} /><Route path="contents/:id" element={<ContentDetail />} /><Route path="contents/:id/edit" element={<ContentEditor />} />
       <Route path="continue" element={<ReturnPointsPage />} /><Route path="continue/new" element={<ReturnPointEditor />} /><Route path="continue/:id/edit" element={<ReturnPointEditor />} />
       <Route path="reviews" element={<ReviewsPage />} /><Route path="reviews/:id" element={<ReviewPage />} /><Route path="reviews/:id/history" element={<ReviewHistoryPage />} />
+      <Route path="academy" element={<AcademyPage />} /><Route path="statistics" element={<StatisticsPage />} />
     </Route>
     <Route path="*" element={<main className="app-loading"><h1>Página não encontrada</h1><a href="/">Voltar ao início</a></main>} />
   </Routes>;
