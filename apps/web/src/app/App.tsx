@@ -19,7 +19,7 @@ export function App() {
           </span>
           <span>estudo<span className="brand-light">em</span>dia<span className="brand-period">.</span></span>
         </a>
-        <a className="about-link" href="#projeto">Conheça o projeto <ArrowIcon /></a>
+        <nav className="flex items-center gap-5" aria-label="Acesso"><a className="about-link" href="/login">Entrar</a><a className="primary-link" style={{ marginTop: 0 }} href="/register">Criar conta <ArrowIcon /></a></nav>
       </header>
 
       <main id="conteudo">
@@ -32,7 +32,7 @@ export function App() {
               <span className="development-icon" aria-hidden="true">✳</span>
               <div>
                 <p className="development-title">Seu espaço está em construção</p>
-                <p className="development-description">Esta é a base do Estudo em Dia. Cadastro, sessões de foco e revisões chegam nas próximas etapas.</p>
+                <p className="development-description">Cadastro e disciplinas já estão disponíveis. Sessões de foco, revisões e Academia Viva chegam nas próximas etapas.</p>
               </div>
             </div>
             <a className="primary-link" href="#projeto">Veja o que vem por aí <ArrowIcon down /></a>

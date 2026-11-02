@@ -1,5 +1,7 @@
 # Etapa 1 — continuação parcial: fundamentos de segurança
 
+> Registro histórico da primeira continuação. A implementação persistida e sua validação posterior estão no [relatório de conclusão](ETAPA-1-CONCLUSAO.md).
+
 Data: 02/11/2026. Solicitação real: **“Pode continuar o desenvolvimento”**.
 
 **Em andamento, não concluída.** O usuário autorizou anteriormente o envio dos arquivos ao repositório `joaosampaio22/bootcamp`. Não há aprovação de funcionalidades prontas nem teste de login entre contas.

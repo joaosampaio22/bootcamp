@@ -1,5 +1,7 @@
 # Evidência real — Etapa 0: base reprodutível
 
+> Registro histórico. O bloqueio descrito abaixo foi superado por compilação do engine oficial. As Etapas 0 e 1 foram posteriormente verificadas; veja [o relatório atual](ETAPA-1-CONCLUSAO.md).
+
 Data: **02/11/2026**, horário do usuário `America/Sao_Paulo`.
 
 **Status: implementação criada; validação integral bloqueada pela rede. Não declarar a Etapa 0 concluída.**

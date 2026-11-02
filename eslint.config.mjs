@@ -18,5 +18,9 @@ export default tseslint.config(
       'react-refresh/only-export-components': ['error', { allowConstantExport: true }]
     }
   },
-  { files: ['apps/api/**/*.ts'], rules: { '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }] } }
+  {
+    files: ['apps/api/**/*.ts'],
+    languageOptions: { parserOptions: { emitDecoratorMetadata: true, experimentalDecorators: true } },
+    rules: { '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }] }
+  }
 );

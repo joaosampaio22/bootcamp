@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { requireTestDatabase } from './test-database.mjs';
+import { randomBytes } from 'node:crypto';
 
 let testUrl;
 try {
@@ -16,7 +17,7 @@ for (const script of ['db:migrate', 'test:integration']) {
     cwd: root,
     stdio: 'inherit',
     shell: process.platform === 'win32',
-    env: { ...process.env, DATABASE_URL: testUrl, NODE_ENV: 'test' }
+    env: { ...process.env, DATABASE_URL: testUrl, NODE_ENV: 'test', JWT_SECRET: randomBytes(32).toString('hex'), COOKIE_SECURE: 'false' }
   });
   if (result.error) {
     console.error('Não foi possível executar o npm. Confira sua instalação.');
