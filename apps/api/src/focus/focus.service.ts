@@ -2,27 +2,26 @@ import { BadRequestException, ConflictException, HttpException, Inject, Injectab
 import { createHash } from 'node:crypto';
 import { isUUID } from 'class-validator';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { UserTransactionService } from '../prisma/user-transaction.service.js';
 import { ClockService } from '../common/clock.service.js';
 import { RewardsService } from '../rewards/rewards.service.js';
 import type { FocusSession, FocusStatus, Prisma } from '../generated/prisma/client.js';
 import type { FinishFocusDto, ReconcileFocusDto, StartFocusDto, TransitionDto } from './focus.dto.js';
 import { elapsedSeconds, needsReconciliation, OPEN_STATUSES } from './focus.rules.js';
 
-type Session = FocusSession & { subject?: { name: string } | null };
+type Session = FocusSession & { subject?: { name: string } | null; content?: { title: string } | null };
 
 @Injectable()
 export class FocusService {
   constructor(
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(ClockService) private readonly clock: ClockService,
-    @Inject(RewardsService) private readonly rewards: RewardsService
+    @Inject(RewardsService) private readonly rewards: RewardsService,
+    @Inject(UserTransactionService) private readonly transactions: UserTransactionService
   ) {}
 
   private async locked<T>(userId: string, work: (tx: Prisma.TransactionClient, now: Date) => Promise<T | HttpException>): Promise<T> {
-    const result = await this.prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${userId}::uuid FOR UPDATE`;
-      return work(tx, this.clock.now());
-    }, { maxWait: 10000, timeout: 10000 });
+    const result = await this.transactions.run(userId, (tx) => work(tx, this.clock.now()));
     // Conflitos depois de detectar abandono devem preservar NEEDS_RECONCILIATION.
     if (result instanceof HttpException) throw result;
     return result;
@@ -30,7 +29,7 @@ export class FocusService {
 
   private snapshot(session: Session, now: Date) {
     return {
-      id: session.id, subjectId: session.subjectId, subjectName: session.subject?.name ?? null, contentId: session.contentId,
+      id: session.id, subjectId: session.subjectId, subjectName: session.subject?.name ?? null, contentId: session.contentId, contentTitle: session.content?.title ?? null,
       plannedSeconds: session.plannedSeconds, activeSeconds: session.activeSeconds, status: session.status,
       activeStartedAt: session.activeStartedAt?.toISOString() ?? null, startedAt: session.startedAt.toISOString(),
       finishedAt: session.finishedAt?.toISOString() ?? null, version: session.version, serverNow: now.toISOString(),
@@ -43,7 +42,7 @@ export class FocusService {
   }
 
   private async transition(tx: Prisma.TransactionClient, previous: Session, now: Date, status: FocusStatus, data: Prisma.FocusSessionUpdateInput = {}) {
-    const session = await tx.focusSession.update({ where: { id: previous.id }, data: { ...data, status, version: { increment: 1 } }, include: { subject: { select: { name: true } } } });
+    const session = await tx.focusSession.update({ where: { id: previous.id }, data: { ...data, status, version: { increment: 1 } }, include: { subject: { select: { name: true } }, content: { select: { title: true } } } });
     await tx.focusTransition.create({ data: { userId: session.userId, sessionId: session.id, fromStatus: previous.status, toStatus: status, activeSeconds: session.activeSeconds, createdAt: now } });
     return session;
   }
@@ -57,25 +56,31 @@ export class FocusService {
   }
 
   private async own(tx: Prisma.TransactionClient, userId: string, id: string, now: Date) {
-    const session = await tx.focusSession.findFirst({ where: { id, userId }, include: { subject: { select: { name: true } } } });
+    const session = await tx.focusSession.findFirst({ where: { id, userId }, include: { subject: { select: { name: true } }, content: { select: { title: true } } } });
     if (!session) throw new NotFoundException();
     return this.refresh(tx, session, now);
   }
 
   async active(userId: string) {
     return this.locked(userId, async (tx, now) => {
-      const session = await tx.focusSession.findFirst({ where: { userId, status: { in: [...OPEN_STATUSES] } }, include: { subject: { select: { name: true } } } });
+      const session = await tx.focusSession.findFirst({ where: { userId, status: { in: [...OPEN_STATUSES] } }, include: { subject: { select: { name: true } }, content: { select: { title: true } } } });
       return session ? this.snapshot(await this.refresh(tx, session, now), now) : null;
     });
   }
 
   async start(userId: string, dto: StartFocusDto) {
     return this.locked(userId, async (tx, now) => {
-      const existing = await tx.focusSession.findFirst({ where: { userId, status: { in: [...OPEN_STATUSES] } }, include: { subject: { select: { name: true } } } });
+      const existing = await tx.focusSession.findFirst({ where: { userId, status: { in: [...OPEN_STATUSES] } }, include: { subject: { select: { name: true } }, content: { select: { title: true } } } });
       if (existing) return this.conflict(await this.refresh(tx, existing, now), now, 'Você já tem uma sessão aberta. Retome ou resolva essa sessão.');
-      if (dto.contentId) throw new UnprocessableEntityException('O vínculo com conteúdos estará disponível na etapa de conteúdos.');
-      if (dto.subjectId && !await tx.subject.findFirst({ where: { id: dto.subjectId, userId, archivedAt: null } })) throw new NotFoundException('Disciplina não encontrada.');
-      const session = await tx.focusSession.create({ data: { userId, subjectId: dto.subjectId ?? null, plannedSeconds: dto.plannedMinutes * 60, startedAt: now, activeStartedAt: now }, include: { subject: { select: { name: true } } } });
+      let subjectId = dto.subjectId ?? null;
+      if (dto.contentId) {
+        const content = await tx.studyContent.findFirst({ where: { id: dto.contentId, userId, archivedAt: null, subject: { archivedAt: null } } });
+        if (!content) throw new NotFoundException('Conteúdo não encontrado.');
+        if (subjectId && subjectId !== content.subjectId) throw new UnprocessableEntityException('A disciplina precisa corresponder ao conteúdo.');
+        subjectId = content.subjectId;
+      }
+      if (subjectId && !await tx.subject.findFirst({ where: { id: subjectId, userId, archivedAt: null } })) throw new NotFoundException('Disciplina não encontrada.');
+      const session = await tx.focusSession.create({ data: { userId, subjectId, contentId: dto.contentId ?? null, plannedSeconds: dto.plannedMinutes * 60, startedAt: now, activeStartedAt: now }, include: { subject: { select: { name: true } }, content: { select: { title: true } } } });
       await tx.focusTransition.create({ data: { userId, sessionId: session.id, fromStatus: null, toStatus: 'RUNNING', activeSeconds: 0, createdAt: now } });
       return this.snapshot(session, now);
     });
@@ -128,7 +133,7 @@ export class FocusService {
 
   async history(userId: string, page: number, pageSize: number) {
     return this.locked(userId, async (tx, now) => {
-      const rows = await tx.focusSession.findMany({ where: { userId }, orderBy: [{ startedAt: 'desc' }, { id: 'asc' }], skip: (page - 1) * pageSize, take: pageSize, include: { subject: { select: { name: true } } } });
+      const rows = await tx.focusSession.findMany({ where: { userId }, orderBy: [{ startedAt: 'desc' }, { id: 'asc' }], skip: (page - 1) * pageSize, take: pageSize, include: { subject: { select: { name: true } }, content: { select: { title: true } } } });
       const sessions = await Promise.all(rows.map((row) => this.refresh(tx, row, now)));
       const rewards = await tx.rewardEvent.findMany({ where: { userId, sourceType: 'FOCUS_SESSION', sourceId: { in: sessions.map((s) => s.id) } }, select: { id: true, sourceId: true, sourceType: true, xp: true, localDate: true } });
       return { items: sessions.map((s) => ({ ...this.snapshot(s, now), reward: rewards.find((r) => r.sourceId === s.id) ?? null })), page, pageSize, total: await tx.focusSession.count({ where: { userId } }), totalXp: await this.rewards.total(tx, userId) };

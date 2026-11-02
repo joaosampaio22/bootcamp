@@ -4,13 +4,13 @@ Um espaço para estudar qualquer conteúdo, preservar pontos de retorno e organi
 
 ## Baixar e visualizar sem instalar
 
-No GitHub, use **Code → Download ZIP**, extraia o arquivo e abra **`PREVIA.html`** no navegador. O arquivo mostra capturas reais de cadastro e foco da **Etapa 2**, com dados fictícios e relógio controlado nos testes, sem instalar nada. É uma galeria visual; para usar os formulários e salvar seus próprios dados, execute a aplicação conforme abaixo.
+No GitHub, use **Code → Download ZIP**, extraia o arquivo e abra **`PREVIA.html`** no navegador. O arquivo mostra capturas reais de conteúdos, pontos de retorno e início da **Etapa 3**, com dados fictícios, sem instalar nada. É uma galeria visual; para usar os formulários e salvar seus próprios dados, execute a aplicação conforme abaixo.
 
 Para desenvolver ou executar com API e banco, siga as instruções abaixo.
 
-**Estado atual: Etapas 0, 1 e 2 implementadas e verificadas nesta instância.** Cadastro, login/logout, perfil, disciplinas e sessões de foco funcionam com API e PostgreSQL. O foco permite iniciar sem cadastro de conteúdo, pausar, retomar, concluir/interromper e recuperar sessões pendentes. XP é calculado pelo servidor, com limite diário e idempotência transacional. Consulte o [relatório atual](docs/evidencias-ia/ETAPA-2.md).
+**Estado atual: Etapas 0–3 implementadas e verificadas nesta instância.** Cadastro, login/logout, perfil, disciplinas, foco, conteúdos livres e pontos de retorno funcionam com API e PostgreSQL. O início destaca a próxima ação aberta mais recente. Revisão pode ser habilitada para agendar amanhã; a execução das revisões pertence à Etapa 4. XP de foco continua calculado pelo servidor, com limite diário e idempotência transacional. Consulte o [relatório atual](docs/evidencias-ia/ETAPA-3.md).
 
-**O MVP completo ainda está em desenvolvimento:** conteúdos, continuidade, revisões, academia e estatísticas pertencem às próximas etapas de [docs/07_PLANO_CODEX.md](docs/07_PLANO_CODEX.md). Os relatos anteriores são registros históricos.
+**O MVP completo ainda está em desenvolvimento:** realização de revisões, academia, estatísticas e polimento pertencem às próximas etapas de [docs/07_PLANO_CODEX.md](docs/07_PLANO_CODEX.md). Os relatos anteriores são registros históricos.
 
 ## Pré-requisitos
 
@@ -39,7 +39,7 @@ npm run dev
 
 `npm ci` gera o client Prisma pelo `postinstall`; essa geração não exige banco ativo nem `.env`. `setup:env` gera uma senha do banco e uma chave JWT **aleatórias, somente locais**, em `.env` com permissão restrita, sem exibir os valores. Reexecutar preserva as variáveis existentes e adiciona a chave JWT se ainda estiver ausente. Não use nem versione as credenciais locais em hospedagem pública.
 
-Abra **http://localhost:5173/register** para criar sua conta; o app abre **/app/focus** após entrar. Disciplinas e perfil ficam na navegação lateral. A API usa a porta **3000**. O Vite encaminha `/api` para a API sem expor segredos ao navegador. Use `localhost` na interface: o padrão `FRONTEND_ORIGIN=http://localhost:5173` rejeita escritas originadas de `http://127.0.0.1:5173`. Se escolher outra origem, configure-a explicitamente no `.env`.
+Abra **http://localhost:5173/register** para criar sua conta; o app abre **/app** após entrar. Início, foco, disciplinas, conteúdos, “Onde parei” e perfil ficam na navegação. A API usa a porta **3000**. O Vite encaminha `/api` para a API sem expor segredos ao navegador. Use `localhost` na interface: o padrão `FRONTEND_ORIGIN=http://localhost:5173` rejeita escritas originadas de `http://127.0.0.1:5173`. Se escolher outra origem, configure-a explicitamente no `.env`.
 
 Verifique em outro terminal:
 
@@ -67,9 +67,19 @@ As rotas de escrita exigem `Origin` confiável (ou `Referer` válido quando Orig
 - Concluir/interromper/reconciliar usa `Idempotency-Key` UUID. Reenvio da mesma operação retorna o comprovante original; chave reutilizada com outro corpo ou chave nova em sessão já encerrada retorna 409. A tela mantém a chave em memória durante retry de rede. Após recarregar, o estado e o histórico vêm novamente do servidor.
 - Histórico inclui a origem e o identificador do evento de XP. Não existe rota pública para enviar XP ou avançar o relógio.
 
-API: `POST /api/v1/focus-sessions`, `GET /focus-sessions/active`, `GET /focus-sessions`, `POST /focus-sessions/:id/pause`, `/resume`, `/finish` e `/reconcile`, sempre sob `/api/v1`. Start recebe `{plannedMinutes, subjectId?, contentId?}`; finish recebe `{outcome:"COMPLETED"|"INTERRUPTED", expectedVersion?}`. Reconcile também permite `DISCARDED`; nos outros resultados exige `confirmedActiveSeconds` inteiro. O vínculo com conteúdos será implementado na Etapa 3: por ora `contentId` pode ser omitido/null; referência não nula recebe 422.
+API: `POST /api/v1/focus-sessions`, `GET /focus-sessions/active`, `GET /focus-sessions`, `POST /focus-sessions/:id/pause`, `/resume`, `/finish` e `/reconcile`, sempre sob `/api/v1`. Start recebe `{plannedMinutes, subjectId?, contentId?}`; finish recebe `{outcome:"COMPLETED"|"INTERRUPTED", expectedVersion?}`. Reconcile também permite `DISCARDED`; nos outros resultados exige `confirmedActiveSeconds` inteiro. Um conteúdo vinculado precisa ser próprio, ativo e de disciplina ativa; sua disciplina é derivada pelo servidor. Disciplina explícita incompatível retorna 422.
 
 As transições aceitam `expectedVersion` para detectar abas desatualizadas. Os erros de conflito devolvem estado atual em `error.details.session`. Os dados privados são enviados com `Cache-Control: no-store`.
+
+## Conteúdos e continuidade
+
+- Conteúdo exige disciplina e título; aceita notas em texto simples, link HTTP(S), data civil de estudo e opção de revisão. Pesquisa por título/notas e listas paginadas distinguem ativos e arquivados. Não há catálogo ou exercício obrigatório.
+- A primeira agenda vence **amanhã no fuso do perfil**, independentemente de uma data de estudo retroativa. Datas são persistidas como DATE; a resposta JSON usa ISO à meia-noite UTC e a interface exibe a parte civil sem converter fuso. Editar notas não adia a agenda.
+- Desabilitar revisão ou arquivar o conteúdo suspende a mesma agenda, preservando seu ID. Reabilitar/restaurar com revisão habilitada agenda novamente amanhã. Disciplina arquivada oculta seus conteúdos e impede foco vinculado; a futura fila deve excluir conteúdos e disciplinas arquivados. Autoavaliações, tentativas e XP por revisão ainda não estão disponíveis.
+- “Onde parei” exige somente uma próxima ação; contexto, disciplina, conteúdo e material são opcionais. Pontos abertos/concluídos persistem após refresh e novo login. O início destaca o ponto OPEN atualizado mais recentemente e permite voltar a uma sessão ativa ou pendente.
+- Arquivar preserva os vínculos e o histórico. Não existe exclusão física por API. Registrar conteúdo ou retorno não concede XP. Após o foco, os dois registros continuam opcionais.
+
+Rotas sob `/api/v1`: `GET/POST /contents`, `GET/PATCH /contents/:id`, `GET/POST /return-points`, `GET/PATCH /return-points/:id` e `GET /dashboard`. Listagens aceitam `page` e `pageSize` (máximo 100). Conteúdos aceitam `q`, `subjectId` e `archived=true|false`; retornos aceitam `status=OPEN|DONE`. Patch usa `archived` em conteúdos e `status` em retornos. Dashboard expõe somente `activeSession` e `nextReturnPoint` nesta etapa.
 
 ## Verificação
 
@@ -85,8 +95,8 @@ npm run build
 npm run verify
 ```
 
-- `npm test`: verificações Node do bloqueio de bancos inseguros, Jest para segurança/configuração/saúde e Vitest/Testing Library para acesso, rotas privadas e disciplinas. Não depende de banco ativo; requer dependências e client Prisma gerado para resolver os tipos da aplicação.
-- `npm run test:integration`: aplica migrações **no banco de testes** e executa Jest/Supertest com Nest e PostgreSQL reais. Verifica autenticação, isolamento, foco, pausas, limite de XP, concorrência, chaves repetidas, recuperação e rollback de recompensa com relógio controlado. O cenário de indisponibilidade do health injeta uma falha de consulta; não é um teste de queda física do servidor.
+- `npm test`: verificações Node do bloqueio de bancos inseguros, Jest para segurança/configuração/saúde, regras de foco e datas civis, e Vitest/Testing Library para as telas implementadas. Não depende de banco ativo; requer dependências e client Prisma gerado para resolver os tipos da aplicação.
+- `npm run test:integration`: aplica migrações **no banco de testes** e executa Jest/Supertest com Nest e PostgreSQL reais. Verifica autenticação, isolamento, foco, XP, concorrência, recuperação, rollback, conteúdos, agenda única, arquivamento e continuidade após login com relógio controlado. O cenário de indisponibilidade do health injeta uma falha de consulta; não é um teste de queda física do servidor.
 - O runner de integração exige `TEST_DATABASE_URL` separado, com nome terminado em `_test`, antes de executar qualquer migração. Os registros fictícios criados pelos testes são removidos ao final.
 - `npm run db:status`: estado das migrações de desenvolvimento.
 - `npm run db:migrate:dev -- --name nome`: para criar novas migrações durante desenvolvimento; `db:migrate` somente aplica migrações versionadas.
@@ -146,8 +156,8 @@ scripts/        configuração local e runner seguro de integração
 docs/           especificação original, decisões e evidências reais
 ```
 
-O banco possui três migrações: conta/disciplinas e foco com `FocusSession`, `FocusTransition`, `FocusAction` e `RewardEvent`. Índices parciais garantem disciplina ativa única por nome/conta e uma sessão aberta por conta. Eventos têm origem única; o lock de usuário serializa ações de foco e o teto diário. Não há seed automática nem credenciais de demonstração no código. As contas fictícias das verificações são removidas ao final.
+O banco possui quatro migrações, incluindo `StudyContent`, `ReviewSchedule` e `ReturnPoint`. Índices parciais garantem disciplina ativa única por nome/conta e uma sessão aberta por conta; cada conteúdo possui no máximo uma agenda. Eventos têm origem única; o lock de usuário serializa escritas de disciplinas, conteúdos, continuidade e foco. FKs compostas reforçam propriedade de vínculos. Não há seed automática nem credenciais de demonstração no código. As contas fictícias das verificações são removidas ao final.
 
-A próxima entrega do plano é **Etapa 3 — conteúdos e continuidade**, ainda não implementada.
+A próxima entrega do plano é **Etapa 4 — revisões periódicas**: lembrar antes de revelar notas, autoavaliar, reagendar em dias civis e conceder XP transacional sem duplicação.
 
-Referências: [documentação principal](docs/00_LEIA_PRIMEIRO.md), [autenticação e engine](docs/decisoes/ADR-0003-autenticacao-persistida-engine.md), [decisões de foco e XP](docs/decisoes/ADR-0004-foco-recompensas.md), [resultados atuais](docs/evidencias-ia/ETAPA-2.md).
+Referências: [documentação principal](docs/00_LEIA_PRIMEIRO.md), [autenticação e engine](docs/decisoes/ADR-0003-autenticacao-persistida-engine.md), [foco e XP](docs/decisoes/ADR-0004-foco-recompensas.md), [conteúdos e continuidade](docs/decisoes/ADR-0005-conteudos-continuidade.md), [resultados atuais](docs/evidencias-ia/ETAPA-3.md).

@@ -22,6 +22,9 @@ model User {
   subjects        Subject[]
   focusSessions   FocusSession[]
   rewardEvents    RewardEvent[]
+  contents        StudyContent[]
+  returnPoints    ReturnPoint[]
+  reviewSchedules ReviewSchedule[]
 }
 
 model AuthSession {
@@ -45,7 +48,10 @@ model Subject {
   updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
   user           User      @relation(fields: [userId], references: [id], onDelete: Restrict)
   focusSessions  FocusSession[]
+  contents       StudyContent[]
+  returnPoints   ReturnPoint[]
 
+  @@unique([id, userId])
   @@index([userId, archivedAt])
 }
 
@@ -82,6 +88,7 @@ model FocusSession {
   subject              Subject?    @relation(fields: [subjectId], references: [id], onDelete: Restrict)
   transitions          FocusTransition[]
   actions              FocusAction[]
+  content              StudyContent? @relation(fields: [contentId, userId], references: [id, userId], onDelete: Restrict)
 
   @@unique([id, userId])
   @@index([userId, startedAt(sort: Desc)])
@@ -126,4 +133,72 @@ model RewardEvent {
 
   @@unique([sourceType, sourceId])
   @@index([userId, localDate, sourceType])
+}
+
+model StudyContent {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @db.Uuid
+  subjectId     String    @db.Uuid
+  title         String    @db.VarChar(160)
+  notes         String    @default("") @db.Text
+  materialUrl   String?   @db.Text
+  studiedOn     DateTime  @db.Date
+  reviewEnabled Boolean   @default(true)
+  archivedAt    DateTime? @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  subject       Subject   @relation(fields: [subjectId, userId], references: [id, userId], onDelete: Restrict)
+  review        ReviewSchedule?
+  focusSessions FocusSession[]
+  returnPoints  ReturnPoint[]
+
+  @@unique([id, userId])
+  @@index([userId, subjectId, archivedAt])
+  @@index([userId, studiedOn])
+}
+
+enum ReviewScheduleStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model ReviewSchedule {
+  id          String @id @default(uuid()) @db.Uuid
+  userId      String @db.Uuid
+  contentId   String @unique @db.Uuid
+  stepIndex   Int @default(0)
+  nextDueDate DateTime @db.Date
+  status      ReviewScheduleStatus @default(ACTIVE)
+  version     Int @default(1)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+  user        User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  content     StudyContent @relation(fields: [contentId, userId], references: [id, userId], onDelete: Restrict)
+
+  @@unique([contentId, userId])
+  @@index([userId, status, nextDueDate])
+}
+
+enum ReturnPointStatus {
+  OPEN
+  DONE
+}
+
+model ReturnPoint {
+  id          String @id @default(uuid()) @db.Uuid
+  userId      String @db.Uuid
+  subjectId   String? @db.Uuid
+  contentId   String? @db.Uuid
+  context     String @default("") @db.Text
+  nextAction  String @db.VarChar(500)
+  materialUrl String? @db.Text
+  status      ReturnPointStatus @default(OPEN)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+  user        User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  subject     Subject? @relation(fields: [subjectId, userId], references: [id, userId], onDelete: Restrict)
+  content     StudyContent? @relation(fields: [contentId, userId], references: [id, userId], onDelete: Restrict)
+
+  @@index([userId, status, updatedAt(sort: Desc)])
 }

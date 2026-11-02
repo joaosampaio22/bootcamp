@@ -23,6 +23,7 @@ function setup(initial: FocusSnapshot | null = null, mutation?: (url: string, in
     if (url.endsWith('/focus-sessions/active')) return Promise.resolve(json(current));
     if (url.includes('/focus-sessions?')) return Promise.resolve(json({ items: [], total: 0, totalXp: 0, page: 1, pageSize: 10 }));
     if (url.includes('/subjects?')) return Promise.resolve(json({ items: [], total: 0, page: 1, pageSize: 100 }));
+    if (url.includes('/contents?')) return Promise.resolve(json({ items: [], total: 0, page: 1, pageSize: 100 }));
     return Promise.reject(new Error('URL inesperada'));
   });
   vi.stubGlobal('fetch', fetch);

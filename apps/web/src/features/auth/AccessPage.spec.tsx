@@ -34,6 +34,7 @@ describe('acesso e rotas privadas', () => {
     const fetch = vi.fn((url: string, init?: RequestInit) => {
       if (url.endsWith('/auth/me')) return Promise.resolve(json({}, 401));
       if (url.endsWith('/auth/register')) return Promise.resolve(json(session, 201));
+      if (url.endsWith('/dashboard')) return Promise.resolve(json({ activeSession: null, nextReturnPoint: null }));
       if (url.endsWith('/focus-sessions/active')) return Promise.resolve(json(null));
       if (url.includes('/focus-sessions?')) return Promise.resolve(json({ items: [], total: 0, totalXp: 0, page: 1, pageSize: 10 }));
       if (url.endsWith('/subjects') && init?.method === 'POST') { created = true; return Promise.resolve(json({ id: 'subject-demo', name: 'História livre' }, 201)); }

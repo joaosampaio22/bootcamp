@@ -1,5 +1,6 @@
 export interface FocusSnapshot {
   id: string; subjectId: string | null; subjectName: string | null;
+  contentId?: string | null; contentTitle?: string | null;
   plannedSeconds: number; activeSeconds: number;
   status: 'RUNNING' | 'PAUSED' | 'NEEDS_RECONCILIATION' | 'COMPLETED' | 'INTERRUPTED' | 'DISCARDED';
   activeStartedAt: string | null; startedAt: string; finishedAt: string | null;

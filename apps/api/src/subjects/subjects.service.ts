@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { UserTransactionService } from '../prisma/user-transaction.service.js';
 import { ClockService } from '../common/clock.service.js';
 import type { CreateSubjectDto, UpdateSubjectDto } from './subject.dto.js';
 
@@ -7,7 +8,7 @@ function normalizedName(name: string): string { return name.normalize('NFC').toL
 
 @Injectable()
 export class SubjectsService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService, @Inject(ClockService) private readonly clock: ClockService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService, @Inject(ClockService) private readonly clock: ClockService, @Inject(UserTransactionService) private readonly transactions: UserTransactionService) {}
 
   list(userId: string, archived: boolean, page: number, pageSize: number) {
     const where = { userId, archivedAt: archived ? { not: null } : null };
@@ -29,14 +30,14 @@ export class SubjectsService {
   }
 
   async create(userId: string, dto: CreateSubjectDto) {
-    try { return await this.prisma.subject.create({ data: { userId, name: dto.name, normalizedName: normalizedName(dto.name) } }); }
+    try { return await this.transactions.run(userId, (tx) => tx.subject.create({ data: { userId, name: dto.name, normalizedName: normalizedName(dto.name) } })); }
     catch (error) { this.conflict(error); }
   }
 
   async update(userId: string, id: string, dto: UpdateSubjectDto) {
     if (dto.name === undefined && dto.archived === undefined) throw new BadRequestException('Informe um nome ou estado de arquivamento.');
     try {
-      return await this.prisma.$transaction(async (tx) => {
+      return await this.transactions.run(userId, async (tx) => {
         const result = await tx.subject.updateMany({ where: { id, userId }, data: {
           ...(dto.name !== undefined ? { name: dto.name, normalizedName: normalizedName(dto.name) } : {}),
           ...(dto.archived !== undefined ? { archivedAt: dto.archived ? this.clock.now() : null } : {})

@@ -180,6 +180,29 @@ button:disabled { cursor: wait; opacity: .55; }
 .recovery-card > p { line-height: 1.8; margin-top: 18px; color: #52684f; }
 .recovery-card .app-form { max-width: 480px; }
 .recovery-card .focus-actions { justify-content: flex-start; margin-top: 0; }
+.editor-card { max-width: 760px; }
+.app-form select, .app-form textarea { width: 100%; min-width: 0; border: 1px solid #bac9b9; border-radius: 7px; padding: 12px 14px; font: inherit; font-weight: 400; color: #153d38; background: white; }
+.app-form textarea { resize: vertical; line-height: 1.7; }
+.app-form select:focus-visible, .app-form textarea:focus-visible { outline: 2px solid #3b725a; outline-offset: 2px; }
+.app-form .check-label { display: flex; align-items: flex-start; gap: 10px; line-height: 1.7; }
+.check-label input { width: 18px; min-height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: #153d38; }
+.form-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 22px; }
+.study-search { display: flex; align-items: flex-end; gap: 16px; margin: 16px 0 28px; }
+.study-search label { flex: 1; }
+.study-list, .return-list { list-style: none; padding: 0; margin: 0; }
+.study-list li { padding: 24px 0; border-top: 1px solid #e5eadf; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.study-list h3 { font-size: 17px; margin: 12px 0; overflow-wrap: anywhere; }
+.study-list p:not(.eyebrow) { font-size: 12px; color: #596b58; margin-top: 7px; }
+.study-notes { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.85; font-size: 14px; margin: 20px 0; }
+.material-link { display: inline-flex; align-items: center; gap: 6px; }
+.review-status { background: #edf3e5; padding: 12px 16px; border-radius: 7px; font-size: 13px; margin: 22px 0; }
+.return-list li { border-top: 1px solid #e5eadf; padding: 28px 0; }
+.return-list h3 { font-size: 18px; line-height: 1.6; overflow-wrap: anywhere; }
+.dashboard-primary { background: #f0f4e7; }
+.dashboard-primary h2 { margin-top: 18px; line-height: 1.6; overflow-wrap: anywhere; font-size: 24px; }
+.dashboard-primary > p:not(.eyebrow) { line-height: 1.8; font-size: 14px; margin-top: 18px; }
+.dashboard-primary > a.app-button { margin-top: 22px; }
+@media (max-width: 760px) { .workspace-sidebar nav { flex-wrap: wrap; } .workspace-sidebar nav a { font-size: 12px; padding: 9px 12px; } .study-search { flex-direction: column; align-items: stretch; } .study-list li { flex-wrap: wrap; } }
 @media (max-width: 760px) {
   .access-page { grid-template-columns: 1fr; }
   .access-aside { display: none; }
