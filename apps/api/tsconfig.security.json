@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": true },
+  "include": [
+    "src/auth/**/*.ts",
+    "src/subjects/subject.dto.ts",
+    "src/common/iana-time-zone.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

@@ -10,6 +10,8 @@ Para desenvolver ou executar com API e banco, siga as instruções abaixo.
 
 **Estado atual: Etapa 0 — base em implementação.** Há uma SPA de apresentação, API com saúde do PostgreSQL, esquema mínimo e verificações automatizadas. Cadastro, login, disciplinas, foco, XP, conteúdos, continuidade, revisões e academia **ainda não estão implementados**. O plano completo está em [docs/07_PLANO_CODEX.md](docs/07_PLANO_CODEX.md). Consulte as [evidências de execução](docs/evidencias-ia/ETAPA-0.md) para os resultados e pendências da base.
 
+**Continuação: Etapa 1 iniciada pela segurança**, com Argon2id, codec JWT, verificações de Origin/CSRF e DTOs testados. Esses componentes ainda não estão ligados a endpoints nem a sessões persistidas; não há cadastro/login funcional. A validação integral continua bloqueada pelo download oficial do Prisma. Veja o [registro da continuação](docs/evidencias-ia/ETAPA-1.md).
+
 ## Pré-requisitos
 
 - Node.js **24.19.0** (ver `.nvmrc`) e npm **11.x**; ambiente usa npm 11.9.0.

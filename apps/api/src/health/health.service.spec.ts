@@ -2,14 +2,14 @@ import 'reflect-metadata';
 import { describe, expect, it, jest } from '@jest/globals';
 import { Test } from '@nestjs/testing';
 import { ServiceUnavailableException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { DATABASE_PROBE } from './database-probe.js';
 import { HealthService } from './health.service.js';
 
 describe('HealthService', () => {
   async function setup() {
     const query = jest.fn<() => Promise<unknown>>();
     const module = await Test.createTestingModule({
-      providers: [HealthService, { provide: PrismaService, useValue: { $queryRaw: query } }]
+      providers: [HealthService, { provide: DATABASE_PROBE, useValue: { ping: query } }]
     }).compile();
     return { module, query, service: module.get(HealthService) };
   }
