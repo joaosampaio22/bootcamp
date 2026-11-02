@@ -22,6 +22,7 @@ export function ContentDetail() {
   const active = !content.archivedAt && !content.subject.archivedAt;
   return <><header className="workspace-heading"><p className="eyebrow">{content.subject.name}</p><h1>{content.title}</h1><p>Estudado em {dateLabel(content.studiedOn)}{content.archivedAt ? ' · Conteúdo arquivado' : ''}{content.subject.archivedAt ? ' · Disciplina arquivada' : ''}</p></header><section className="workspace-card"><h2>Minhas anotações</h2><p className="study-notes">{content.notes || 'Você ainda não adicionou anotações. O título e o material já ajudam a retomar.'}</p><MaterialLink url={content.materialUrl} />
     <p className="review-status">{content.review?.status === 'ACTIVE' && active ? 'Revisão agendada para ' + dateLabel(content.review.nextDueDate) : 'Sem revisão na fila ativa.'}</p>
+    {content.review && <Link className="text-button" to={'/app/reviews/' + content.review.id}>Ver revisão e histórico</Link>}
     <div className="form-actions"><Link className="app-button" to={`/app/contents/${content.id}/edit`}>Editar conteúdo</Link>{active && <Link className="app-button secondary-button" to={`/app/focus?contentId=${content.id}`}>Estudar este conteúdo</Link>}<Link className="text-button" to={`/app/continue/new?contentId=${content.id}&subjectId=${content.subjectId}`}>Salvar ponto de retorno</Link><button className="text-button" onClick={() => void archive()} disabled={busy}>{content.archivedAt ? 'Restaurar conteúdo' : 'Arquivar conteúdo'}</button></div>{error && <p className="form-error" role="alert">{error}</p>}
     </section></>;
 }

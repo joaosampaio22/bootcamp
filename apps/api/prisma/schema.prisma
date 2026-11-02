@@ -25,6 +25,7 @@ model User {
   contents        StudyContent[]
   returnPoints    ReturnPoint[]
   reviewSchedules ReviewSchedule[]
+  reviewAttempts  ReviewAttempt[]
 }
 
 model AuthSession {
@@ -152,6 +153,7 @@ model StudyContent {
   review        ReviewSchedule?
   focusSessions FocusSession[]
   returnPoints  ReturnPoint[]
+  reviewAttempts ReviewAttempt[]
 
   @@unique([id, userId])
   @@index([userId, subjectId, archivedAt])
@@ -175,9 +177,42 @@ model ReviewSchedule {
   updatedAt   DateTime @updatedAt @db.Timestamptz(3)
   user        User @relation(fields: [userId], references: [id], onDelete: Restrict)
   content     StudyContent @relation(fields: [contentId, userId], references: [id, userId], onDelete: Restrict)
+  attempts    ReviewAttempt[]
 
+  @@unique([id, contentId, userId])
   @@unique([contentId, userId])
   @@index([userId, status, nextDueDate])
+}
+
+enum ReviewRating {
+  AGAIN
+  HARD
+  GOOD
+  EASY
+}
+
+model ReviewAttempt {
+  id                    String @id @default(uuid()) @db.Uuid
+  userId                String @db.Uuid
+  contentId             String @db.Uuid
+  scheduleId            String @db.Uuid
+  scheduleVersionBefore Int
+  rating                ReviewRating
+  oldStepIndex          Int
+  newStepIndex          Int
+  oldDueDate            DateTime @db.Date
+  newDueDate            DateTime @db.Date
+  idempotencyKey        String @db.Uuid
+  fingerprint           String @db.VarChar(64)
+  response              Json
+  createdAt             DateTime @db.Timestamptz(3)
+  user                  User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  content               StudyContent @relation(fields: [contentId, userId], references: [id, userId], onDelete: Restrict)
+  schedule              ReviewSchedule @relation(fields: [scheduleId, contentId, userId], references: [id, contentId, userId], onDelete: Restrict)
+
+  @@unique([scheduleId, scheduleVersionBefore])
+  @@unique([userId, idempotencyKey])
+  @@index([userId, scheduleId, createdAt(sort: Desc)])
 }
 
 enum ReturnPointStatus {

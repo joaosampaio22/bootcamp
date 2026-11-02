@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client.js';
 import { focusXp, localDate } from '../focus/focus.rules.js';
+import { reviewXp } from '../reviews/review.rules.js';
 
 @Injectable()
 export class RewardsService {
@@ -13,5 +14,10 @@ export class RewardsService {
   }
   async total(tx: Prisma.TransactionClient, userId: string): Promise<number> {
     return (await tx.rewardEvent.aggregate({ where: { userId }, _sum: { xp: true } }))._sum.xp ?? 0;
+  }
+  async grantReview(tx: Prisma.TransactionClient, userId: string, attemptId: string, now: Date, timeZone: string) {
+    const date = localDate(now, timeZone);
+    const aggregate = await tx.rewardEvent.aggregate({ where: { userId, sourceType: 'REVIEW_ATTEMPT', localDate: date }, _sum: { xp: true } });
+    return tx.rewardEvent.create({ data: { userId, sourceType: 'REVIEW_ATTEMPT', sourceId: attemptId, xp: reviewXp(aggregate._sum.xp ?? 0), localDate: date, createdAt: now } });
   }
 }

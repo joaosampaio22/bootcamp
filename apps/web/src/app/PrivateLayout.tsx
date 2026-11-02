@@ -21,7 +21,7 @@ export function PrivateLayout() {
   return <div className="workspace-shell">
     <a className="skip-link" href="#workspace-main">Pular para o conteúdo</a>
     <aside className="workspace-sidebar"><Link className="access-brand" to="/app">estudoemdia.</Link>
-      <nav aria-label="Navegação principal"><NavLink to="/app" end>Início</NavLink><NavLink to="/app/focus">Foco</NavLink><NavLink to="/app/subjects">Disciplinas</NavLink><NavLink to="/app/contents">Conteúdos</NavLink><NavLink to="/app/continue">Onde parei</NavLink><NavLink to="/app/settings">Meu perfil</NavLink></nav>
+      <nav aria-label="Navegação principal"><NavLink to="/app" end>Início</NavLink><NavLink to="/app/focus">Foco</NavLink><NavLink to="/app/subjects">Disciplinas</NavLink><NavLink to="/app/contents">Conteúdos</NavLink><NavLink to="/app/reviews">Revisões</NavLink><NavLink to="/app/continue">Onde parei</NavLink><NavLink to="/app/settings">Meu perfil</NavLink></nav>
       <div className="sidebar-bottom"><p>{auth.session.user.name}</p><button onClick={logout} disabled={busy}>{busy ? 'Saindo…' : 'Sair da conta'}</button>{error && <p role="alert">{error}</p>}</div>
     </aside>
     <main id="workspace-main" className="workspace-content"><Outlet /></main>

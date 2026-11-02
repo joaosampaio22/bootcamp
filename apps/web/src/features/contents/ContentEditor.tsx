@@ -41,7 +41,7 @@ function ContentForm({ content, subjectId, presetSubject }: { content?: Content;
     <label>Minhas anotações (opcional)<textarea name="notes" maxLength={10000} rows={6} defaultValue={content?.notes ?? ''} /></label>
     <label>Link do material (opcional)<input name="materialUrl" type="url" defaultValue={content?.materialUrl ?? ''} placeholder="https://…" /></label>
     <label>Data em que estudei<input name="studiedOn" type="date" required defaultValue={content?.studiedOn.slice(0,10) ?? today(auth.session?.user.timeZone ?? 'America/Sao_Paulo')} /></label>
-    <label className="check-label"><input type="checkbox" checked={review} onChange={(e) => setReview(e.target.checked)} /> Quero revisar periodicamente este conteúdo</label><small>{review ? 'Ao habilitar, a primeira revisão é agendada para amanhã no seu fuso. A realização das revisões chega na próxima etapa.' : 'O assunto será salvo sem revisão ativa. Você pode habilitar depois.'}</small>
+    <label className="check-label"><input type="checkbox" checked={review} onChange={(e) => setReview(e.target.checked)} /> Quero revisar periodicamente este conteúdo</label><small>{review ? 'Ao habilitar, a primeira revisão é agendada para amanhã no seu fuso. Editar as notas não adia uma revisão já ativa.' : 'O assunto será salvo sem revisão ativa. Você pode habilitar depois.'}</small>
     {error && <p role="alert" className="form-error">{error}</p>}<div className="form-actions"><button className="app-button" disabled={busy}>{busy ? 'Salvando…' : 'Salvar conteúdo'}</button><Link className="text-button" to={content ? '/app/contents/' + content.id : '/app/contents'}>Cancelar</Link></div>
   </form></section></>;
 }

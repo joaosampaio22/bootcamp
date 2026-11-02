@@ -11,6 +11,9 @@ import { ContentDetail } from '../features/contents/ContentDetail';
 import { ReturnPointsPage } from '../features/continuity/ReturnPointsPage';
 import { ReturnPointEditor } from '../features/continuity/ReturnPointEditor';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
+import { ReviewsPage } from '../features/reviews/ReviewsPage';
+import { ReviewPage } from '../features/reviews/ReviewPage';
+import { ReviewHistoryPage } from '../features/reviews/ReviewHistoryPage';
 
 export function Router() {
   return <Routes><Route path="/" element={<App />} />
@@ -18,6 +21,7 @@ export function Router() {
     <Route path="/app" element={<PrivateLayout />}><Route index element={<DashboardPage />} /><Route path="focus" element={<FocusPage />} /><Route path="subjects" element={<SubjectsPage />} /><Route path="settings" element={<ProfilePage />} />
       <Route path="contents" element={<ContentsPage />} /><Route path="contents/new" element={<ContentEditor />} /><Route path="contents/:id" element={<ContentDetail />} /><Route path="contents/:id/edit" element={<ContentEditor />} />
       <Route path="continue" element={<ReturnPointsPage />} /><Route path="continue/new" element={<ReturnPointEditor />} /><Route path="continue/:id/edit" element={<ReturnPointEditor />} />
+      <Route path="reviews" element={<ReviewsPage />} /><Route path="reviews/:id" element={<ReviewPage />} /><Route path="reviews/:id/history" element={<ReviewHistoryPage />} />
     </Route>
     <Route path="*" element={<main className="app-loading"><h1>Página não encontrada</h1><a href="/">Voltar ao início</a></main>} />
   </Routes>;
